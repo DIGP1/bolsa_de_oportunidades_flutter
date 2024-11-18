@@ -1,7 +1,6 @@
 // lib/presentations/widgets/job_card.dart
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/model1.dart';
 import 'package:flutter/material.dart';
-import '../models/job_model.dart';
 
 class JobCard extends StatelessWidget {
   final JobOpportunity job;
