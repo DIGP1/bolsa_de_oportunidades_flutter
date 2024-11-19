@@ -1,6 +1,5 @@
 // lib/main.dart
-import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
-/*import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/login_screen.dart';*/
+import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,11 +15,10 @@ class MyApp extends StatelessWidget {
       title: 'Bolsa de Oportunidades',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: const Color(0xFF9C241C),
         scaffoldBackgroundColor: Colors.white,
       ),
-      /*home: const LoginScreen(),*/
-      home: const HomeScreen()
+      home: const LoginScreen(), // O MainScreen() si quieres saltarte el login
     );
   }
 }

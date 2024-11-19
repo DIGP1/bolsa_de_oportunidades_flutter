@@ -1,5 +1,6 @@
 // lib/presentations/screens/login_screen.dart
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/registro_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,9 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white.withOpacity(0.1), //color de fondo
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Image.asset(
-                      'assets/ues.jpeg'      // Ruta de imagen
-                    ),
+                    child: Image.asset('assets/ues.jpeg' // Ruta de imagen
+                        ),
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -73,17 +73,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: 'Correo electrónico',
                           labelStyle: TextStyle(color: Colors.grey[600]!),
                           hintText: 'ejemplo@correo.com',
-                          prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF9C241C)),
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: Color(0xFF9C241C)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                         ),
                         validator: (value) {
@@ -104,7 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: 'Contraseña',
                           labelStyle: TextStyle(color: Colors.grey[600]!),
                           hintText: 'Ingresa tu contraseña',
-                          prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF9C241C)),
+                          prefixIcon: const Icon(Icons.lock_outline,
+                              color: Color(0xFF9C241C)),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isPasswordVisible
@@ -122,11 +126,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
+                            borderSide:
+                                const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                         ),
                         validator: (value) {
@@ -165,7 +171,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: () {
                                 // Implementar recuperación de contraseña
                               },
-                              child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(color: Color(0xFF9C241C))),
+                              child: const Text('¿Olvidaste tu contraseña?',
+                                  style: TextStyle(color: Color(0xFF9C241C))),
                             ),
                           ),
                         ],
@@ -196,10 +203,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             'Iniciar Sesión',
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
-                            ),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                         ),
                       ),
@@ -231,14 +237,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           _socialButton(
                             icon: Icons.g_mobiledata,
-                            color: const Color(0xFF9C241C),  // Pasa el color aquí
+                            color:
+                                const Color(0xFF9C241C), // Pasa el color aquí
                             onPressed: () {
                               // Implementar inicio de sesión con Google
                             },
                           ),
                           _socialButton(
                             icon: Icons.facebook,
-                            color: const Color(0xFF9C241C),  // Pasa el color aquí
+                            color:
+                                const Color(0xFF9C241C), // Pasa el color aquí
                             onPressed: () {
                               // Implementar inicio de sesión con Facebook
                             },
@@ -259,15 +267,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           const Text(
                             '¿No tienes una cuenta?',
-                            style: TextStyle(color: Color.fromRGBO(117, 117, 117, 1)),
+                            style: TextStyle(
+                                color: Color.fromRGBO(117, 117, 117, 1)),
                           ),
                           TextButton(
                             onPressed: () {
-                              // Navegar a la pantalla de registro
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterScreen(),
+                                ),
+                              );
                             },
                             child: const Text(
                               'Regístrate',
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF9C241C)),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF9C241C),
+                              ),
                             ),
                           ),
                         ],
@@ -294,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFF9C241C)),
+          border: Border.all(color: const Color.fromARGB(255, 207, 200, 199)),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, size: 30, color: color),

@@ -1,3 +1,4 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/vista_proyecto.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class HomeScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildCategories(),
+                    _buildCategories(context),
                     _buildRecentJobs(),
                   ],
                 ),
@@ -29,118 +30,119 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Color(0xFF9C241C), Color(0xFFBF2E24)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black26,
-          blurRadius: 6,
-          offset: Offset(0, 2),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF9C241C), Color(0xFFBF2E24)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-      ],
-    ),
-    child: Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-              CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 25, 
-                  child: ClipOval( 
-                    child: Image.asset(
-                      'assets/ues.jpeg',
-                      width: 100,      
-                      height: 100,     
-                      fit: BoxFit.cover, 
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '¡Bienvenido!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Encuentra tu trabajo ideal',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined, color: Colors.white),
-              onPressed: () {
-                // Manejar notificaciones
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 6,
+            offset: Offset(0, 2),
           ),
-          child: Row(
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.search, color: Color(0xFF9C241C)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Buscar propuesta...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 25,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/ues.jpeg',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    border: InputBorder.none, 
-                    contentPadding: EdgeInsets.zero, 
                   ),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '¡Bienvenido!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Encuentra tu trabajo ideal',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
-                  onChanged: (value) {
-                    // Aquí puedes manejar los cambios en el texto
-                  },
-                ),
+                ],
               ),
               IconButton(
-                icon: const Icon(Icons.tune, color: Color(0xFF9C241C)),
+                icon: const Icon(Icons.notifications_outlined,
+                    color: Colors.white),
                 onPressed: () {
-                  // Aquí puedes manejar el tap en el botón de filtros
+                  // Manejar notificaciones
                 },
               ),
             ],
           ),
-        )
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.search, color: Color(0xFF9C241C)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Buscar propuesta...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                    onChanged: (value) {
+                      // Aquí puedes manejar los cambios en el texto
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.tune, color: Color(0xFF9C241C)),
+                  onPressed: () {
+                    // Aquí puedes manejar el tap en el botón de filtros
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
-  Widget _buildCategories() {
+  Widget _buildCategories(BuildContext context) {
     final categories = [
       {'icon': Icons.computer, 'name': 'Tecnología'},
       {'icon': Icons.brush, 'name': 'Diseño'},
@@ -149,24 +151,32 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Container(
-      height: 100,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      height: MediaQuery.of(context).size.height * 0.12, // Reducida la altura
+      padding: const EdgeInsets.symmetric(
+          vertical: 5), // Reducido el padding vertical
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.05,
+        ),
         itemCount: categories.length,
         itemBuilder: (context, index) {
           return Container(
-            width: 70,
-            margin: const EdgeInsets.only(right: 15),
+            width:
+                MediaQuery.of(context).size.width * 0.18, // Reducido el ancho
+            margin: EdgeInsets.only(
+              right: MediaQuery.of(context).size.width * 0.03,
+              bottom: 5, // Agregado margen inferior pequeño
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withOpacity(0.2), // Sombra más sutil
                   spreadRadius: 1,
-                  blurRadius: 5,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -176,14 +186,18 @@ class HomeScreen extends StatelessWidget {
                 Icon(
                   categories[index]['icon'] as IconData,
                   color: const Color(0xFF9C241C),
-                  size: 30,
+                  size: MediaQuery.of(context).size.width *
+                      0.06, // Icono más pequeño
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 4), // Espacio reducido
                 Text(
                   categories[index]['name'] as String,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width *
+                        0.025, // Texto más pequeño
                     fontWeight: FontWeight.w500,
+                    color: Colors.grey[800],
                   ),
                 ),
               ],
@@ -198,7 +212,7 @@ class HomeScreen extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -211,7 +225,12 @@ class HomeScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {},
-                child: const Text('Ver todos'),
+                child: const Text(
+                  'Ver todos',
+                  style: TextStyle(
+                    color: Color(0xFF9C241C),
+                  ),
+                ),
               ),
             ],
           ),
@@ -221,73 +240,115 @@ class HomeScreen extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: 5,
           itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all( 
-                  color: const Color(0xFF9C241C), // Color del borde
-                  width: 1, // Grosor del borde
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 5,
+            return GestureDetector(
+              // Envuelve todo el Container
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProyectoDetalleScreen(),
                   ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFF9C241C),
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+                );
+              },
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
-                    child: const Icon(
-                      Icons.work,
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF9C241C).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.work,
+                        color: Color(0xFF9C241C),
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Desarrollador Flutter Senior',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Color(0xFF9C241C),
+                              ),
+                              const SizedBox(width: 4),
+                              const Text(
+                                'TechCorp • Ciudad de Guatemala',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 155, 151, 151),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildTag('Tiempo completo'),
+                              const SizedBox(width: 8),
+                              _buildTag('Remoto'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.bookmark_border,
                       color: Color(0xFF9C241C),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Desarrollador Flutter Senior',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          'TechCorp • Ciudad de Guatemala',
-                          style: TextStyle(
-                            color: Color(0xFF9C241C),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(
-                    Icons.bookmark_border,
-                    color: Color(0xFF9C241C),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildTag(String tag) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF9C241C).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        tag,
+        style: const TextStyle(
+          color: Color(0xFF9C241C),
+          fontSize: 12,
+        ),
+      ),
     );
   }
 
@@ -300,10 +361,6 @@ class HomeScreen extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Inicio',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.business_center),
-          label: 'Trabajos',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.bookmark),
