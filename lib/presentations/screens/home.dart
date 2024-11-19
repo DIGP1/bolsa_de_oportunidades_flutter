@@ -151,59 +151,58 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.12, // Reducida la altura
-      padding: const EdgeInsets.symmetric(
-          vertical: 5), // Reducido el padding vertical
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.05,
-        ),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width:
-                MediaQuery.of(context).size.width * 0.18, // Reducido el ancho
-            margin: EdgeInsets.only(
-              right: MediaQuery.of(context).size.width * 0.03,
-              bottom: 5, // Agregado margen inferior pequeño
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2), // Sombra más sutil
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  categories[index]['icon'] as IconData,
-                  color: const Color(0xFF9C241C),
-                  size: MediaQuery.of(context).size.width *
-                      0.06, // Icono más pequeño
-                ),
-                const SizedBox(height: 4), // Espacio reducido
-                Text(
-                  categories[index]['name'] as String,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width *
-                        0.025, // Texto más pequeño
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[800],
+      height: MediaQuery.of(context).size.height * 0.12,
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Center(
+        child: ListView.builder(
+          shrinkWrap: true, // Helps with centering
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.05,
+          ),
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            return Container(
+              width: MediaQuery.of(context).size.width * 0.18,
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.015,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    categories[index]['icon'] as IconData,
+                    color: const Color(0xFF9C241C),
+                    size: MediaQuery.of(context).size.width * 0.06,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    categories[index]['name'] as String,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.025,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -241,7 +240,6 @@ class HomeScreen extends StatelessWidget {
           itemCount: 5,
           itemBuilder: (context, index) {
             return GestureDetector(
-              // Envuelve todo el Container
               onTap: () {
                 Navigator.push(
                   context,
@@ -281,7 +279,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 15),
-                    Expanded(
+                   Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -293,19 +291,24 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Row(
+                          // Solución para la fila de ubicación
+                          const Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.location_on,
                                 size: 16,
                                 color: Color(0xFF9C241C),
                               ),
-                              const SizedBox(width: 4),
-                              const Text(
-                                'TechCorp • Ciudad de Guatemala',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 155, 151, 151),
-                                  fontSize: 14,
+                              SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  'TechCorp • Ciudad de Guatemala',
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 155, 151, 151),
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               ),
                             ],
