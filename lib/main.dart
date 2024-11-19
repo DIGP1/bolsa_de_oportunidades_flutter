@@ -1,5 +1,6 @@
 // lib/main.dart
-import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/login_screen.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
+/*import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/login_screen.dart';*/
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const LoginScreen(),
+      /*home: const LoginScreen(),*/
+      home: const HomeScreen()
     );
   }
 }

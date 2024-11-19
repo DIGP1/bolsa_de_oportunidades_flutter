@@ -21,47 +21,47 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 4),
                 // Logo o imagen de la app
                 Center(
                   child: Container(
-                    height: 100,
-                    width: 100,
+                    height: 150,
+                    width: 200,
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
+                      color: Colors.white.withOpacity(0.1), //color de fondo
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(
-                      Icons.work_outline,
-                      size: 50,
-                      color: Colors.blue,
+                    child: Image.asset(
+                      'assets/ues.jpeg'      // Ruta de imagen
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                const Text(
-                  '¡Bienvenido!',
-                  textAlign: TextAlign.center, // Agregamos esta línea
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                const SizedBox(height: 5),
+                const Center(
+                  child: Text(
+                    '¡Bienvenido!',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      /*color: Colors.black87,*/
+                      color: Color(0xFF9C241C), //color de texto
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 3),
                 Text(
                   'Inicia sesión para encontrar tu oportunidad ideal',
-                  textAlign: TextAlign.center, // Agregamos esta línea
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 // Formulario
                 Form(
                   key: _formKey,
@@ -71,18 +71,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Correo electrónico',
+                          labelStyle: TextStyle(color: Colors.grey[600]!),
                           hintText: 'ejemplo@correo.com',
-                          prefixIcon: const Icon(Icons.email_outlined),
+                          prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF9C241C)),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                         ),
                         validator: (value) {
@@ -101,8 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
+                          labelStyle: TextStyle(color: Colors.grey[600]!),
                           hintText: 'Ingresa tu contraseña',
-                          prefixIcon: const Icon(Icons.lock_outline),
+                          prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF9C241C)),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isPasswordVisible
@@ -120,11 +122,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Color(0xFFF5D0C8)),
                           ),
                         ),
                         validator: (value) {
@@ -142,28 +144,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _rememberMe = value!;
-                                  });
-                                },
-                              ),
-                              const Text('Recordarme'),
-                            ],
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _rememberMe = value!;
+                                    });
+                                  },
+                                  activeColor: const Color(0xFF9C241C),
+                                ),
+                                const Text('Recordarme'),
+                              ],
+                            ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // Implementar recuperación de contraseña
-                            },
-                            child: const Text('¿Olvidaste tu contraseña?'),
+                          Flexible(
+                            child: TextButton(
+                              onPressed: () {
+                                // Implementar recuperación de contraseña
+                              },
+                              child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(color: Color(0xFF9C241C))),
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 10),
                       // Botón de inicio de sesión
                       SizedBox(
                         width: double.infinity,
@@ -181,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: const Color(0xFF9C241C),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -191,11 +198,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Colors.white
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 10),
                       // Otros métodos de inicio de sesión
                       Row(
                         children: [
@@ -223,32 +231,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           _socialButton(
                             icon: Icons.g_mobiledata,
+                            color: const Color(0xFF9C241C),  // Pasa el color aquí
                             onPressed: () {
                               // Implementar inicio de sesión con Google
                             },
                           ),
                           _socialButton(
                             icon: Icons.facebook,
+                            color: const Color(0xFF9C241C),  // Pasa el color aquí
                             onPressed: () {
                               // Implementar inicio de sesión con Facebook
                             },
                           ),
                           _socialButton(
                             icon: Icons.apple,
+                            color: const Color(0xFF9C241C),
                             onPressed: () {
                               // Implementar inicio de sesión con Apple
                             },
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 10),
                       // Enlace para registro
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             '¿No tienes una cuenta?',
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: TextStyle(color: Color.fromRGBO(117, 117, 117, 1)),
                           ),
                           TextButton(
                             onPressed: () {
@@ -256,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: const Text(
                               'Regístrate',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF9C241C)),
                             ),
                           ),
                         ],
@@ -275,6 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _socialButton({
     required IconData icon,
     required VoidCallback onPressed,
+    Color? color,
   }) {
     return InkWell(
       onTap: onPressed,
@@ -282,10 +294,10 @@ class _LoginScreenState extends State<LoginScreen> {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
+          border: Border.all(color: const Color(0xFF9C241C)),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, size: 30),
+        child: Icon(icon, size: 30, color: color),
       ),
     );
   }

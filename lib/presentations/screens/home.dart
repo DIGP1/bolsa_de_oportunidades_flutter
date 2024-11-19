@@ -6,7 +6,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -15,7 +15,6 @@ class HomeScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildSearchBar(),
                     _buildCategories(),
                     _buildRecentJobs(),
                   ],
@@ -30,69 +29,116 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Color(0xFF9C241C), Color(0xFFBF2E24)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 6,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+              CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 25, 
+                  child: ClipOval( 
+                    child: Image.asset(
+                      'assets/ues.jpeg',
+                      width: 100,      
+                      height: 100,     
+                      fit: BoxFit.cover, 
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '¡Bienvenido!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Encuentra tu trabajo ideal',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+              onPressed: () {
+                // Manejar notificaciones
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Row(
             children: [
-              Text(
-                'Bienvenido',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
+              const Icon(Icons.search, color: Color(0xFF9C241C)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Buscar propuesta...',
+                    hintStyle: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                    border: InputBorder.none, 
+                    contentPadding: EdgeInsets.zero, 
+                  ),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                  onChanged: (value) {
+                    // Aquí puedes manejar los cambios en el texto
+                  },
                 ),
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'Encuentra tu trabajo ideal',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
+              IconButton(
+                icon: const Icon(Icons.tune, color: Color(0xFF9C241C)),
+                onPressed: () {
+                  // Aquí puedes manejar el tap en el botón de filtros
+                },
               ),
             ],
           ),
-          const CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.blue,
-            child: Icon(
-              Icons.person,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: 'Buscar trabajos...',
-          hintStyle: TextStyle(color: Colors.grey[400]),
-          prefixIcon: const Icon(Icons.search, color: Colors.blue),
-        ),
-      ),
-    );
-  }
+        )
+      ],
+    ),
+  );
+}
 
   Widget _buildCategories() {
     final categories = [
@@ -103,7 +149,7 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Container(
-      height: 120,
+      height: 100,
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -111,7 +157,7 @@ class HomeScreen extends StatelessWidget {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           return Container(
-            width: 100,
+            width: 70,
             margin: const EdgeInsets.only(right: 15),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -129,7 +175,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Icon(
                   categories[index]['icon'] as IconData,
-                  color: Colors.blue,
+                  color: const Color(0xFF9C241C),
                   size: 30,
                 ),
                 const SizedBox(height: 10),
@@ -159,7 +205,7 @@ class HomeScreen extends StatelessWidget {
               const Text(
                 'Trabajos Recientes',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -181,6 +227,10 @@ class HomeScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
+                border: Border.all( 
+                  color: const Color(0xFF9C241C), // Color del borde
+                  width: 1, // Grosor del borde
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.1),
@@ -195,31 +245,33 @@ class HomeScreen extends StatelessWidget {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
+                      border: Border.all(
+                        color: const Color(0xFF9C241C),
+                      ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
                       Icons.work,
-                      color: Colors.blue,
+                      color: Color(0xFF9C241C),
                     ),
                   ),
-                  const SizedBox(width: 15),
-                  Expanded(
+                  const SizedBox(width: 10),
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Desarrollador Flutter Senior',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 18,
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        SizedBox(height: 5),
                         Text(
                           'TechCorp • Ciudad de Guatemala',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: Color(0xFF9C241C),
                             fontSize: 14,
                           ),
                         ),
@@ -228,7 +280,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const Icon(
                     Icons.bookmark_border,
-                    color: Colors.blue,
+                    color: Color(0xFF9C241C),
                   ),
                 ],
               ),
@@ -241,7 +293,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
-      selectedItemColor: Colors.blue,
+      selectedItemColor: const Color(0xFF9C241C),
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
       items: const [
