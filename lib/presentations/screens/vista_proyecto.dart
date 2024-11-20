@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class ProyectoDetalleScreen extends StatelessWidget {
-  const ProyectoDetalleScreen({Key? key}) : super(key: key);
+class VistaProyecto extends StatelessWidget {
+  const VistaProyecto({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          // AppBar con diseño personalizado
           SliverAppBar(
             expandedHeight: 200.0,
             floating: false,
@@ -50,9 +50,11 @@ class ProyectoDetalleScreen extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
-                          child: Image.asset(
-                            '',
-                            fit: BoxFit.cover,
+                          child: const Icon(
+                            // Reemplazamos Image.asset por un Icon
+                            Icons.business,
+                            size: 40,
+                            color: Color(0xFF9C241C),
                           ),
                         ),
                       ),
@@ -63,42 +65,41 @@ class ProyectoDetalleScreen extends StatelessWidget {
             ),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.bookmark_border),
-                onPressed: () {
-                  // Implementar guardar proyecto
-                },
+                onPressed: () {},
               ),
               IconButton(
                 icon: const Icon(Icons.share),
-                onPressed: () {
-                  // Implementar compartir
-                },
+                onPressed: () {},
               ),
             ],
           ),
-
-          // Contenido principal
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Información básica
                   _buildInfoSection(
                     title: 'Información del Proyecto',
                     children: [
                       _buildInfoRow(
                           Icons.business, 'Empresa:', 'TechCorp Inc.'),
-                      _buildInfoRow(Icons.location_on, 'Ubicación:',
-                          'Ciudad de Guatemala'),
+                      _buildInfoRow(
+                        Icons.location_on,
+                        'Ubicación:',
+                        'Ciudad de Guatemala',
+                      ),
                       _buildInfoRow(Icons.access_time, 'Duración:', '6 meses'),
                       _buildInfoRow(
-                          Icons.work, 'Modalidad:', 'Tiempo completo'),
+                        Icons.work,
+                        'Modalidad:',
+                        'Tiempo completo',
+                      ),
                       _buildInfoRow(Icons.group, 'Cupos:', '2 disponibles'),
                     ],
                   ),

@@ -1,10 +1,10 @@
 // lib/presentations/screens/login_screen.dart
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
-import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/registro_screen.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -178,7 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      // Botón de inicio de sesión
                       SizedBox(
                         width: double.infinity,
                         height: 55,
@@ -231,37 +230,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      // Botones de redes sociales
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _socialButton(
-                            icon: Icons.g_mobiledata,
-                            color:
-                                const Color(0xFF9C241C), // Pasa el color aquí
-                            onPressed: () {
-                              // Implementar inicio de sesión con Google
-                            },
-                          ),
-                          _socialButton(
-                            icon: Icons.facebook,
-                            color:
-                                const Color(0xFF9C241C), // Pasa el color aquí
-                            onPressed: () {
-                              // Implementar inicio de sesión con Facebook
-                            },
-                          ),
-                          _socialButton(
-                            icon: Icons.apple,
-                            color: const Color(0xFF9C241C),
-                            onPressed: () {
-                              // Implementar inicio de sesión con Apple
-                            },
-                          ),
-                        ],
-                      ),
+
                       const SizedBox(height: 10),
-                      // Enlace para registro
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -296,25 +266,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _socialButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-    Color? color,
-  }) {
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color.fromARGB(255, 207, 200, 199)),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, size: 30, color: color),
       ),
     );
   }

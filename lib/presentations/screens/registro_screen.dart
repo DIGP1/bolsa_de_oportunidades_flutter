@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -93,10 +93,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: _buildInputDecoration(
                             'Correo electrónico', Icons.email_outlined),
                         validator: (value) {
-                          if (value!.isEmpty)
+                          if (value!.isEmpty) {
                             return 'Por favor ingresa tu correo';
-                          if (!value.contains('@'))
+                          }
+                          if (!value.contains('@')) {
                             return 'Ingresa un correo válido';
+                          }
                           return null;
                         },
                       ),
@@ -117,10 +119,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isEmpty)
+                          if (value!.isEmpty) {
                             return 'Por favor ingresa una contraseña';
-                          if (value.length < 6)
+                          }
+                          if (value.length < 6) {
                             return 'La contraseña debe tener al menos 6 caracteres';
+                          }
                           return null;
                         },
                       ),
@@ -142,8 +146,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value!.isEmpty)
+                          if (value!.isEmpty) {
                             return 'Por favor confirma tu contraseña';
+                          }
                           // Aquí deberías comparar con la contraseña original
                           return null;
                         },

@@ -1,4 +1,4 @@
-import 'package:bolsa_de_oportunidades_flutter/presentations/widgets/vista_proyecto.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -241,10 +241,9 @@ class HomeScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
+                Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const ProyectoDetalleScreen(),
+                    builder: (context) => const VistaProyecto(),
                   ),
                 );
               },
@@ -279,7 +278,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 15),
-                   Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
