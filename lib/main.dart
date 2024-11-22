@@ -4,7 +4,7 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proye
 import 'package:flutter/material.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized(); // Añade esta línea
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

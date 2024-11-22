@@ -6,9 +6,9 @@ class JobCard extends StatelessWidget {
   final JobOpportunity job;
 
   const JobCard({
-    Key? key,
+    super.key,
     required this.job,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
