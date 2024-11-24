@@ -24,28 +24,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Botón de regresar
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Color(0xFF9C241C)),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: 4),
-                // Logo
-                Center(
-                  child: Container(
-                    height: 100,
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // BOTÓN DE REGRESAR 
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2), 
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xFF9C241C),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
                     ),
-                    child: Image.asset('assets/ues.jpeg'),
-                  ),
+                    
+                    const SizedBox(width: 22),
+                    
+                    //LOGO UES
+                    Container(
+                      height: 150,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 202, 39, 39).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Image.asset('assets/ues.jpeg'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 2),
                 const Center(
                   child: Text(
-                    'Registro',
+                    'Registro de usuario',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -53,16 +65,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  'Completa tus datos para registrarte',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
+                const SizedBox(height: 2),
+                Center(
+                  child: Text(
+                    'Completa tus datos para registrarte',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 // Formulario
                 Form(
                   key: _formKey,
@@ -86,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? 'Por favor ingresa tus apellidos'
                             : null,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Correo electrónico
                       TextFormField(
@@ -102,7 +116,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Contraseña
                       TextFormField(
@@ -153,7 +167,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 5),
 
                       // Términos y condiciones
                       Row(
@@ -176,7 +190,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 3),
 
                       // Botón de registro
                       SizedBox(
@@ -207,7 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 2),
 
                       // Enlace para iniciar sesión
                       Row(
