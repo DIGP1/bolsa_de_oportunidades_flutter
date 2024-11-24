@@ -20,23 +20,7 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFF9C241C),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const LoginScreen(), 
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/vista_proyecto':
-            return MaterialPageRoute(
-              builder: (context) => const VistaProyecto(),
-            );
-          case '/home':
-            return MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            );
-          default:
-            return MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            );
-        }
-      },
+      home: const LoginScreen(),
     );
   }
 }

@@ -1,3 +1,6 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/carreras.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_register.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -9,15 +12,74 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  Api_Request api = Api_Request();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _acceptTerms = false;
+  int _idCarreraSeleccionada = 0;
+  List<Carreras> listaCarreras = [];
+  bool _isLoading = true; // Bandera para mostrar un indicador de carga
+  String? _anioCarrera;
+
+  //Controladores de TextFields
+  TextEditingController? _nombresController;
+  TextEditingController? _apellidosController;
+  TextEditingController? _correoController;
+  TextEditingController? _telefonoController;
+  TextEditingController? _direccionController;
+  TextEditingController? _passwordController;
+  TextEditingController? _confirmPasswordController;
+  @override
+  void initState(){
+    // TODO: implement initState
+    super.initState();
+    _nombresController = TextEditingController();
+    _apellidosController = TextEditingController();
+    _correoController = TextEditingController();
+    _telefonoController = TextEditingController();
+    _direccionController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+    _fetchCarreras();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _nombresController!.dispose();
+    _apellidosController!.dispose();
+    _correoController!.dispose();
+    _telefonoController!.dispose();
+    _direccionController!.dispose();
+    _passwordController!.dispose();
+    _confirmPasswordController!.dispose();
+    super.dispose();
+  }
+
+
+
+  Future<void> _fetchCarreras() async {
+    try {
+      List<Carreras> carreras = await api.getCarreras();
+      setState(() {
+        listaCarreras = carreras;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al cargar las carreras: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body: _isLoading ? const Center(child: CircularProgressIndicator()) : 
+      SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -84,6 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       // Nombres
                       TextFormField(
+                        controller: _nombresController,
                         decoration: _buildInputDecoration(
                             'Nombres', Icons.person_outline),
                         validator: (value) => value!.isEmpty
@@ -94,6 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       // Apellidos
                       TextFormField(
+                        controller: _apellidosController,
                         decoration: _buildInputDecoration(
                             'Apellidos', Icons.person_outline),
                         validator: (value) => value!.isEmpty
@@ -104,22 +168,96 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       // Correo electrónico
                       TextFormField(
+                        controller: _correoController,
                         decoration: _buildInputDecoration(
-                            'Correo electrónico', Icons.email_outlined),
+                          'Correo electrónico', 
+                          Icons.email_outlined,
+                        ),
                         validator: (value) {
-                          if (value!.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Por favor ingresa tu correo';
                           }
-                          if (!value.contains('@')) {
-                            return 'Ingresa un correo válido';
+                          // Expresión regular para validar el formato LLNNNNN@ues.edu.sv
+                          final regex = RegExp(r'^[a-zA-Z]{2}\d{5}@ues\.edu\.sv$');
+
+                          if (!regex.hasMatch(value)) {
+                            return 'Ingresa un correo en el formato LLNNNNN@ues.edu.sv';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 10),
+                      // Teléfono
+                      TextFormField(
+                        controller: _telefonoController,
+                        keyboardType: TextInputType.phone, 
+                        decoration: _buildInputDecoration(
+                          'Teléfono',
+                          Icons.phone_outlined,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa tu número de teléfono';
+                          }
+                          final regex = RegExp(r'^\d{8}$');
+                          if (!regex.hasMatch(value)) {
+                            return 'Ingresa un número de teléfono válido de 8 dígitos';
+                          }
 
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      //Direccion
+                      TextFormField(
+                        controller: _direccionController,
+                        decoration: _buildInputDecoration(
+                            'Direccion', Icons.location_on_outlined),
+                        validator: (value) => value!.isEmpty
+                            ? 'Por favor ingresa tu direccion'
+                            : null,
+                      ),
+                      const SizedBox(height: 10),
+                      //Carrera
+                      DropdownButtonFormField<Carreras>(
+                      decoration: _buildInputDecoration('Carrera', Icons.school_outlined),
+                        items: listaCarreras.map<DropdownMenuItem<Carreras>>((Carreras value){
+                          return DropdownMenuItem<Carreras>(value: value, child: Text(value.nombre_carrera!));
+                        }).toList(),
+                        validator: (value){
+                          if (value == null) {
+                            return "Por favor, selecciona una opcion";
+                          }
+                          return null;
+                        },
+                        onChanged: (value){
+                          setState(() {
+                            _idCarreraSeleccionada = value!.id!;
+                          });
+                        }),
+                        const SizedBox(height: 10),
+
+                        //Año de estudio
+                        DropdownButtonFormField<String>(
+                        decoration: _buildInputDecoration("Año de estudio", Icons.date_range_outlined),
+                          items: <String>["1", "2","3","4","5"].map<DropdownMenuItem<String>>((String value){
+                            return DropdownMenuItem<String>(value: value, child: Text(value));
+                          }).toList(),
+                          validator: (value){
+                            if (value == null || value.isEmpty) {
+                              return "Por favor, selecciona una opcion";
+                            }
+                            return null;
+                          },
+                          onChanged: (value){
+                            setState(() {
+                              _anioCarrera = value;
+                            });
+                          }),
+                          const SizedBox(height: 10),
                       // Contraseña
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         decoration: _buildInputDecoration(
                           'Contraseña',
@@ -146,6 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       // Confirmar Contraseña
                       TextFormField(
+                        controller: _confirmPasswordController,
                         obscureText: !_isConfirmPasswordVisible,
                         decoration: _buildInputDecoration(
                           'Confirmar Contraseña',
@@ -200,7 +339,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: _acceptTerms
                               ? () {
                                   if (_formKey.currentState!.validate()) {
-                                    // Implementar lógica de registro
+                                    User_register user_register = User_register(
+                                      email: _correoController!.text.toLowerCase(), //Se pasa el correo a minusculas para que no haya problemas en el inicio de sesión
+                                      password: _passwordController!.text,
+                                      estadoUsuario: true,
+                                      fechaRegistro: DateTime.now().toString(),
+                                      nombres: _nombresController!.text,
+                                      apellidos: _apellidosController!.text,
+                                      telefono: _telefonoController!.text,
+                                      idCarrera: _idCarreraSeleccionada,
+                                      carnet: _correoController!.text.substring(0, 7),
+                                      anioEstudio: int.parse(_anioCarrera!),
+                                      direccion: _direccionController!.text,
+                                      tokenRecuperacion: '',
+                                      tokenExpiracion: '',
+                                      idTipoUsuario: 3,
+                                    );
+                                    api.registerUser(user_register).then((value) {
+                                      if (value) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Usuario registrado correctamente'),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                      }
+                                    }).catchError((e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Error al registrar el usuario: $e'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    });
                                   }
                                 }
                               : null,
@@ -254,6 +426,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  
   InputDecoration _buildInputDecoration(String label, IconData icon,
       {Widget? suffixIcon}) {
     return InputDecoration(

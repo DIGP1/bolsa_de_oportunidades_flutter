@@ -1,4 +1,7 @@
 // lib/presentations/screens/login_screen.dart
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_login.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+  Api_Request _apiRequest = Api_Request();
+  User_login? _user_login;
+  TextEditingController? _emailController;
+  TextEditingController? _passwordController;
+  User? _user;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _emailController!.dispose();
+    _passwordController!.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +76,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 3),
-                Text(
-                  'Inicia sesión para encontrar tu oportunidad ideal',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
+                Center(
+                  child: Text(
+                    'Inicia sesión para encontrar tu oportunidad ideal',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -69,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       // Campo de correo
                       TextFormField(
+                        controller: _emailController,
                         decoration: InputDecoration(
                           labelText: 'Correo electrónico',
                           labelStyle: TextStyle(color: Colors.grey[600]!),
@@ -102,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 20),
                       // Campo de contraseña
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
@@ -115,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               setState(() {
                                 _isPasswordVisible = !_isPasswordVisible;
                               });
@@ -182,15 +209,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: ()async {
                             if (_formKey.currentState!.validate()) {
-                              // Implementar lógica de inicio de sesión
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HomeScreen(),
-                                ),
-                              );
+                              _user_login = User_login(email: _emailController!.text.toLowerCase(), password: _passwordController!.text);
+                              _user = await _apiRequest.loginUser(_user_login!);
+                              if (_user != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Inicio de sesión exitoso")),
+                                );
+                                await Future.delayed(const Duration(seconds: 2));
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(user: _user!),
+                                  ),
+                                );
+                              }
                             }
                           },
                           style: ElevatedButton.styleFrom(

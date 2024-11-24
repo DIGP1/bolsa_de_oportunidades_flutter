@@ -1,11 +1,13 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/guardados_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
 
+class HomeScreen extends StatefulWidget {
+  final User user; 
+  const HomeScreen({Key? key, required this.user}) : super(key: key); 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -21,10 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //Para usar el usuario que inicio sesion tienen que poner widget.user
     return Scaffold(
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: _selectedIndex,
+        //Lista donde se llaman las pantallas de buttonNavigationBar
         children: const [
           HomeContent(),
           SavedJobsScreen(),
@@ -56,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
