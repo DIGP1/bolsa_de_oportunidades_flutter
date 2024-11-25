@@ -5,6 +5,7 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_login.d
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -211,11 +212,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: ()async {
                             if (_formKey.currentState!.validate()) {
+                              print('1');
                               _user_login = User_login(email: _emailController!.text.toLowerCase(), password: _passwordController!.text);
-                              _user = await _apiRequest.loginUser(_user_login!);
+                              print('2');
+                              _user = await _apiRequest.loginUser(_user_login!, context);
+                              print('3');
                               if (_user != null) {
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setString('user_token', _user!.token);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Inicio de sesión exitoso")),
+                                  const SnackBar(content: Text("Inicio de sesión exitoso", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+                                    backgroundColor: Color.fromARGB(255, 31, 145, 35),
+                                  ),
                                 );
                                 await Future.delayed(const Duration(seconds: 2));
                                 Navigator.pushReplacement(

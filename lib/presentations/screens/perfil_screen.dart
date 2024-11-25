@@ -5,6 +5,7 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_info_edit.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   final User user;
@@ -209,6 +210,8 @@ Widget _buildHeader(User user) {
       onTap: () async{
         if (title == 'Cerrar Sesión') {
           if(await api.logout(widget.user.token)){
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('user_token');
             Navigator.pushReplacement(context,
               MaterialPageRoute(
                 builder: (context) => const LoginScreen(),

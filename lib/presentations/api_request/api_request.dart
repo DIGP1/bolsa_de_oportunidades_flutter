@@ -25,7 +25,7 @@ class Api_Request {
       throw Exception('Error en el registro');
     }
   }
-  Future<User> loginUser(User_login request) async {
+  Future<User> loginUser(User_login request, BuildContext context) async {
     final response = await http.post(
       Uri.parse('${baseUrl}login'),
       headers: {'Content-Type': 'application/json'},
@@ -33,11 +33,40 @@ class Api_Request {
     );
 
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body));
+      return User.fromJson(jsonDecode(response.body)['data']);
     } else {
+      if(response.statusCode == 401) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Usuario o contraseña incorrectos', style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       print("Error en el login. Código: ${response.statusCode}");
       print("Cuerpo de la respuesta: ${response.body}");
       throw Exception('Error en el login');
+    }
+  }
+    Future<User> loginUserOpened(String token) async {
+    final response = await http.get(
+      Uri.parse('${baseUrl}me'),
+      headers: {
+        'Authorization': 'Bearer $token', 
+      },
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      if(data is Map<String, dynamic>) {
+        data['token'] = token;
+      }
+      
+      return User.fromJson(data);
+
+    } else {
+      print('Error al obtener los datos del usuario: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+      throw Exception('Error al obtener los datos del usuario');
     }
   }
   Future<List<Carreras>> getCarreras() async {

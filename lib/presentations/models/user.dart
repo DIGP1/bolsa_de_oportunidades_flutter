@@ -5,7 +5,6 @@ class User {
   final int estado_usuario;
   final String fecha_registro;
   final String token;
-  final bool status;
 
   User({
     required this.id_user,
@@ -13,20 +12,18 @@ class User {
     required this.id_tipo_user,
     required this.estado_usuario,
     required this.fecha_registro,
-    required this.token,
-    required this.status
+    required this.token
   });
 
   // Método factory para crear una instancia de User desde la respuesta JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id_user: json['data']['user']['id'],
-      email: json['data']['user']['email'],
-      id_tipo_user: json['data']['user']['id_tipo_usuario'],
-      estado_usuario: json['data']['user']['estado_usuario'],
-      fecha_registro: json['data']['user']['fecha_registro'],
-      token: json['data']['token'],
-      status: json['status'],
+      id_user: json['user']['id'],
+      email: json['user']['email'],
+      id_tipo_user: json['user']['id_tipo_usuario'],
+      estado_usuario: json['user']['estado_usuario'],
+      fecha_registro: json['user']['fecha_registro'],
+      token: json['token'],
     );
   }
 
@@ -39,7 +36,6 @@ class User {
       'estado_usuario': estado_usuario,
       'fecha_registro': fecha_registro,
       'token': token,
-      'status': status
     };
   }
 }
