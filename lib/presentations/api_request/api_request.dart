@@ -1,5 +1,6 @@
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/carreras.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_info_edit.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_login.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_register.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,45 @@ class Api_Request {
       print("Error al obtener las carreras. Código: ${response.statusCode}");
       print("Cuerpo de la respuesta: ${response.body}");
       throw Exception('Error al obtener las carreras');
+    }
+  }
+  
+  Future<User_Info_Edit> getUserInfo(String token) async {
+    final response = await http.get(
+      Uri.parse('${baseUrl}me'),
+      headers: {
+        'Authorization': 'Bearer $token', 
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['user'];
+      var userList = data['info_estudiante'];
+
+      if (userList.isNotEmpty) {
+        var user = userList[0]; 
+        return User_Info_Edit.fromJson(user); 
+      } else {
+        throw Exception('La lista info_estudiante está vacía');
+      }
+    } else {
+      print('Error al obtener los datos del usuario: ${response.statusCode}');
+      throw Exception('Error al obtener los datos del usuario');
+    }
+  }
+  Future<bool> logout(String token) async {
+    final response = await http.post(
+      Uri.parse('${baseUrl}logout'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al cerrar sesión: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+      throw Exception('Error al cerrar sesión');
     }
   }
 }
