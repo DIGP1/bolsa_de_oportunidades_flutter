@@ -212,26 +212,32 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: ()async {
                             if (_formKey.currentState!.validate()) {
-                              print('1');
                               _user_login = User_login(email: _emailController!.text.toLowerCase(), password: _passwordController!.text);
-                              print('2');
                               _user = await _apiRequest.loginUser(_user_login!, context);
-                              print('3');
                               if (_user != null) {
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setString('user_token', _user!.token);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Inicio de sesión exitoso", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
-                                    backgroundColor: Color.fromARGB(255, 31, 145, 35),
-                                  ),
-                                );
-                                await Future.delayed(const Duration(seconds: 2));
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen(user: _user!),
-                                  ),
-                                );
+                                if(_user!.id_tipo_user == 3){
+                                  final prefs = await SharedPreferences.getInstance();
+                                  await prefs.setString('user_token', _user!.token);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Inicio de sesión exitoso", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+                                      backgroundColor: Color.fromARGB(255, 31, 145, 35),
+                                    ),
+                                  );
+                                  await Future.delayed(const Duration(seconds: 2));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeScreen(user: _user!),
+                                    ),
+                                  );
+                                }else{
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Usuario no autorizado", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+                                      backgroundColor: Color.fromARGB(255, 145, 31, 31),
+                                    ),
+                                  );
+                                }
+                                
                               }
                             }
                           },
