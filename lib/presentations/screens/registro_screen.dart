@@ -241,7 +241,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         DropdownButtonFormField<String>(
                         decoration: _buildInputDecoration("Año de estudio", Icons.date_range_outlined),
                           items: <String>["1", "2","3","4","5"].map<DropdownMenuItem<String>>((String value){
-                            return DropdownMenuItem<String>(value: value, child: Text(value));
+                            return DropdownMenuItem<String>(value: value, child: Text("$value° Año"));
                           }).toList(),
                           validator: (value){
                             if (value == null || value.isEmpty) {

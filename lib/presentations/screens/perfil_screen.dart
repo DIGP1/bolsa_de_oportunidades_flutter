@@ -4,6 +4,8 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_req
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_info_edit.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/login_screen.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_editar_screen.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             _buildHeader(widget.user),
             Expanded(
-              child: _buildProfileContent(context, api, widget),
+              child: _buildProfileContent(context, api, widget, userInfo!),
             ),
           ],
         ),
@@ -158,16 +160,16 @@ Widget _buildHeader(User user) {
 }
 }
 
-  Widget _buildProfileContent(BuildContext context, Api_Request api, dynamic widget) {
+  Widget _buildProfileContent(BuildContext context, Api_Request api, dynamic widget, User_Info_Edit userInfo) {
     return ListView(
       padding: const EdgeInsets.all(10),
       children: [
         _buildSection('Información Personal', [
-          _buildListTile(context,api,widget,Icons.person_outline, 'Editar Perfil'),
+          _buildListTile(context,api,widget,userInfo,Icons.person_outline, 'Editar Perfil'),
         ]),
         const SizedBox(height: 15),
         _buildSection('Cuenta', [
-          _buildListTile(context,api,widget,Icons.logout, 'Cerrar Sesión', color: Colors.red),
+          _buildListTile(context,api,widget,userInfo,Icons.logout, 'Cerrar Sesión', color: Colors.red),
         ]),
       ],
     );
@@ -196,7 +198,7 @@ Widget _buildHeader(User user) {
     );
   }
 
-  Widget _buildListTile(BuildContext context, Api_Request api,dynamic widget, IconData icon, String title, {Color? color}) {
+  Widget _buildListTile(BuildContext context, Api_Request api,dynamic widget,User_Info_Edit userInfo, IconData icon, String title, {Color? color}) {
     return ListTile(
       leading: Icon(icon, color: color ?? const Color(0xFF9C241C)),
       title: Text(
@@ -218,6 +220,11 @@ Widget _buildHeader(User user) {
               ),
             );
           }
+        }else{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+            builder: (context) => EditProfileScreen(user: widget.user, userinfo: userInfo)));
         }
 
       },

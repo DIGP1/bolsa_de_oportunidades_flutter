@@ -1,8 +1,77 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/carreras.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_info_edit.dart';
 import 'package:flutter/material.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+class EditProfileScreen extends StatefulWidget {
+  final User user;
+  final User_Info_Edit userinfo;
+  const EditProfileScreen({Key? key, required this.user, required this.userinfo}) : super(key: key);
 
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+
+  //Llamado a la clase de la api
+  Api_Request api = Api_Request();
+  //Variables donde estara la seleccion de los dropdownbutton
+  int _idCarreraSeleccionada = 0;
+  String? _anioCarrera;
+  //Lista de carreras para el dropdownbutton
+  List<Carreras> listaCarreras = [];
+  Carreras? _carreraSeleccionada;
+
+  bool _isLoading = true; // Bandera para mostrar un indicador de carga
+
+
+  //Controladores de los textFields
+  TextEditingController? _telefonoController;
+  TextEditingController? _direccionController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _telefonoController =TextEditingController();
+    _direccionController = TextEditingController();
+
+    //Asignando valores a los EditText
+    _telefonoController!.text = widget.userinfo.telefono;
+    _direccionController!.text = widget.userinfo.direccion;
+
+    _fetchCarreras();
+    _anioCarrera = widget.userinfo.anio_estudio.toString();
+    
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _direccionController!.dispose();
+    _telefonoController!.dispose();
+    super.dispose();
+  }
+
+    Future<void> _fetchCarreras() async {
+    try {
+      List<Carreras> carreras = await api.getCarreras();
+      setState(() {
+        listaCarreras = carreras;
+        _carreraSeleccionada = listaCarreras.firstWhere(
+      (carrera) => carrera.id == widget.userinfo.id_carrera,
+      orElse: () => Carreras(),
+    );
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al cargar las carreras: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +92,7 @@ class EditProfileScreen extends StatelessWidget {
         elevation: 0.5,
         centerTitle: true,
       ),
-      body: SafeArea(
+      body:  _isLoading ? const Center(child: CircularProgressIndicator()) : SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -53,28 +122,13 @@ class EditProfileScreen extends StatelessWidget {
                             color: Color(0xFF9C241C),
                           ),
                         ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF9C241C),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.edit,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                        
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Juan Carlos Pérez Martínez',
-                      style: TextStyle(
+                    Text(
+                      '${widget.userinfo.nombres} ${widget.userinfo.apellidos}',
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -99,19 +153,19 @@ class EditProfileScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     _buildNonEditableField(
                       'Nombres',
-                      'Juan Carlos',
+                      widget.userinfo.nombres,//Aasignacion del nombre del estudiante
                       Icons.person_outline,
                     ),
                     const SizedBox(height: 10),
                     _buildNonEditableField(
                       'Apellidos',
-                      'Pérez Martínez',
+                      widget.userinfo.apellidos,
                       Icons.person_outline,
                     ),
                     const SizedBox(height: 10),
                     _buildNonEditableField(
                       'Correo',
-                      'jc12345@ues.edu.sv',
+                      widget.userinfo.email,
                       Icons.email_outlined,
                     ),
                     const SizedBox(height: 24),
@@ -119,6 +173,7 @@ class EditProfileScreen extends StatelessWidget {
                     _buildSectionTitle('Información de Contacto'),
                     const SizedBox(height: 16),
                     TextFormField(
+                      controller: _telefonoController,
                       keyboardType: TextInputType.phone,
                       decoration: _buildInputDecoration(
                         'Teléfono',
@@ -127,6 +182,7 @@ class EditProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      controller: _direccionController,
                       decoration: _buildInputDecoration(
                         'Dirección',
                         Icons.location_on_outlined,
@@ -137,26 +193,30 @@ class EditProfileScreen extends StatelessWidget {
 
                     _buildSectionTitle('Información Académica'),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      decoration: _buildInputDecoration(
-                        'Carrera',
-                        Icons.school_outlined,
-                      ),
-                      items: ['Ingeniería de Sistemas', 'Ingeniería Industrial', 'Ingeniería Eléctrica']
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (_) {},
-                    ),
+                    DropdownButtonFormField<Carreras>(
+                      decoration: _buildInputDecoration('Carrera', Icons.school_outlined),
+                      value: _carreraSeleccionada,
+                        items: listaCarreras.map<DropdownMenuItem<Carreras>>((Carreras value){
+                          return DropdownMenuItem<Carreras>(value: value, child: Text(value.nombre_carrera!));
+                        }).toList(),
+                        validator: (value){
+                          if (value == null) {
+                            return "Por favor, selecciona una opcion";
+                          }
+                          return null;
+                        },
+                        onChanged: (value){
+                          setState(() {
+                            _idCarreraSeleccionada = value!.id!;
+                          });
+                        }),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       decoration: _buildInputDecoration(
                         'Año de estudio',
                         Icons.date_range_outlined,
                       ),
+                      value: _anioCarrera,
                       items: ['1', '2', '3', '4', '5']
                           .map((String value) {
                         return DropdownMenuItem<String>(
@@ -217,7 +277,6 @@ class EditProfileScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
