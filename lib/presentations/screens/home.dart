@@ -1,3 +1,5 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/guardados_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_screen.dart';
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   
+  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -31,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         //Lista donde se llaman las pantallas de buttonNavigationBar
         children:  [
-          HomeContent(),
+          HomeContent(user: widget.user),
           SavedJobsScreen(),
           ProfileScreen(user: widget.user),
         ],
@@ -61,9 +64,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class HomeContent extends StatefulWidget {
+  final User user;
+  const HomeContent({Key? key, required this.user}) : super(key: key);
 
-class HomeContent extends StatelessWidget {
-  const HomeContent({super.key});
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  Api_Request api = Api_Request();
+  List<ProyectsModel> proyects = [];
+  bool _isLoading = true;
+
+
+  Future<void> _loadProyects() async {
+    try {
+      List<ProyectsModel> list_proyects = await api.getProyects(widget.user.token);
+      setState(() {
+        proyects = list_proyects;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al cargar los proyectos: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al cargar los proyectos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadProyects();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -74,8 +115,8 @@ class HomeContent extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildCategories(context),
-                  _buildRecentJobs(),
+                  //_buildCategories(context),
+                  _isLoading ? const Center(child: CircularProgressIndicator()) : _buildRecentJobs(),
                 ],
               ),
             ),
@@ -186,7 +227,7 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(BuildContext context) {
+ /* Widget _buildCategories(BuildContext context) {
     final categories = [
       {'icon': Icons.computer, 'name': 'Tecnología'},
       {'icon': Icons.brush, 'name': 'Diseño'},
@@ -250,11 +291,11 @@ class HomeContent extends StatelessWidget {
       ),
     );
   }
-
+  */
   Widget _buildRecentJobs() {
     return Column(
       children: [
-        Padding(
+       const Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -265,31 +306,31 @@ class HomeContent extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Ver todos',
-                  style: TextStyle(
-                    color: Color(0xFF9C241C),
-                  ),
-                ),
-              ),
+              )
             ],
           ),
         ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 5,
+          itemCount: proyects.length,
           itemBuilder: (context, index) {
+            ProyectsModel proyect = proyects[index];
             return GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
+              onTap: () async{
+
+                var response = await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const VistaProyecto(),
+                    builder: (context) => VistaProyecto(proyectsModel: proyect, user: widget.user),
                   ),
                 );
+                if(response == null){   
+                  setState(() {
+                    _isLoading = true;
+                    _loadProyects();
+                  });
+                  
+                }
               },
               child: Container(
                 margin:
@@ -316,36 +357,39 @@ class HomeContent extends StatelessWidget {
                         color: const Color(0xFF9C241C).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
-                        Icons.work,
-                        color: Color(0xFF9C241C),
-                      ),
+                      child: 
+                      proyect.tipo_proyecto == 'Servicio Social'
+                        ? const Icon(Icons.query_builder_sharp, color: Color(0xFF9C241C),)
+                        : proyect.tipo_proyecto == 'Pasantía'
+                          ? const Icon(Icons.work,color: Color(0xFF9C241C),)
+                          : const SizedBox(),
+                     
                     ),
                     const SizedBox(width: 15),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Desarrollador Flutter Senior',
-                            style: TextStyle(
+                          Text(
+                            proyect.titulo,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Row(
+                          Row(
                             children: [
-                              Icon(
-                                Icons.location_on,
+                              const Icon(
+                                Icons.business_outlined,
                                 size: 16,
                                 color: Color(0xFF9C241C),
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Flexible(
                                 child: Text(
-                                  'TechCorp • Ciudad de Guatemala',
-                                  style: TextStyle(
+                                  proyect.nombre_empresa,
+                                  style: const TextStyle(
                                     color: Color.fromARGB(255, 155, 151, 151),
                                     fontSize: 14,
                                   ),
@@ -358,9 +402,31 @@ class HomeContent extends StatelessWidget {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              _buildTag('Tiempo completo'),
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Color(0xFF9C241C),
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  proyect.ubicacion,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 155, 151, 151),
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildTag(proyect.tipo_proyecto),
                               const SizedBox(width: 8),
-                              _buildTag('Remoto'),
+                              _buildTag(proyect.modalidad),
                             ],
                           ),
                         ],

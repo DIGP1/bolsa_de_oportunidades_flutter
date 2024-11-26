@@ -342,6 +342,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     User_register user_register = User_register(
                                       email: _correoController!.text.toLowerCase(), //Se pasa el correo a minusculas para que no haya problemas en el inicio de sesión
                                       password: _passwordController!.text,
+                                      confirmPassword: _confirmPasswordController!.text,
                                       estadoUsuario: true,
                                       fechaRegistro: DateTime.now().toString(),
                                       nombres: _nombresController!.text,

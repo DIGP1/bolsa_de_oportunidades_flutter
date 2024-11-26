@@ -4,10 +4,10 @@ class User_Info_Edit{
   final String nombres;
   final String apellidos;
   final String carnet;
-  final int anio_estudio;
-  final String telefono;
-  final String direccion;
-  final int id_carrera;
+  int anio_estudio;
+  String telefono;
+  String direccion;
+  int id_carrera;
   final String nombre_carrera;
   final int id_departamento;
   final String nombre_departamento;
@@ -46,18 +46,12 @@ class User_Info_Edit{
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'email': email,
       'nombres': nombres,
       'apellidos': apellidos,
-      'carnet': carnet,
       'anio_estudio': anio_estudio,
       'telefono': telefono,
       'direccion': direccion,
       'id_carrera': id_carrera,
-      'nombre_carrera': nombre_carrera,
-      'id_departamento': id_departamento,
-      'nombre_departamento': nombre_departamento
     };
   }
 }

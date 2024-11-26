@@ -63,6 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       (carrera) => carrera.id == widget.userinfo.id_carrera,
       orElse: () => Carreras(),
     );
+        _idCarreraSeleccionada = _carreraSeleccionada!.id!;
         _isLoading = false;
       });
     } catch (e) {
@@ -224,7 +225,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Text('$value° Año'),
                         );
                       }).toList(),
-                      onChanged: (_) {},
+                      onChanged: (value) {
+                        setState(() {
+                          _anioCarrera = value;
+                        });
+                      },
                     ),
                     const SizedBox(height: 30),
 
@@ -249,7 +254,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async{
+                          if(_telefonoController!.text.isNotEmpty && _direccionController!.text.isNotEmpty){
+                            User_Info_Edit request = widget.userinfo;
+                            request.anio_estudio = int.parse(_anioCarrera!);
+                            request.telefono = _telefonoController!.text;
+                            request.direccion = _direccionController!.text;
+                            request.id_carrera = _idCarreraSeleccionada;
+                            bool response = await api.editUserInfo(request, widget.user.token);
+                            if(response){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Informacion editada con exito!", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+                                backgroundColor: Color.fromARGB(255, 31, 145, 35),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            }else{
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Error al editar la informacion", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+                                backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,

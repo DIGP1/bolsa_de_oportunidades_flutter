@@ -1,31 +1,55 @@
 class ProyectsModel {
   final int id;
-  final int id_empresa;
+  final String nombre_empresa;
   final String titulo;
   final String descripcion;
   final String requisitos;
-  final int id_estado_oferta;
-  final int id_modalidad;
+  final String estado_oferta;
+  final String modalidad;
   final String fecha_inicio;
   final String fecha_limite;
-
+  final String fecha_fin;
+  final int estado_proyecto;
+  final int cupos_disponibles;
+  final String tipo_proyecto;
   final String ubicacion;
-  final int id_modalidad;
+  final String nombre_carrera;
 
+  ProyectsModel({
+    required this.id,
+    required this.nombre_empresa,
+    required this.titulo,
+    required this.descripcion,
+    required this.requisitos,
+    required this.estado_oferta,
+    required this.modalidad,
+    required this.fecha_inicio,
+    required this.fecha_limite,
+    required this.fecha_fin,
+    required this.estado_proyecto,
+    required this.cupos_disponibles,
+    required this.tipo_proyecto,
+    required this.ubicacion,
+    required this.nombre_carrera,
+  });
 
+  factory ProyectsModel.fromJson(Map<String, dynamic> json) {
+    return ProyectsModel(
+      id: json['id_proyecto'],
+      nombre_empresa: json['nombre_empresa'],
+      titulo: json['titulo_proyecto'],
+      descripcion: json['descripcion_proyeto'],
+      requisitos: json['requisitos_proyecto'],
+      estado_oferta: json['estado_oferta'],
+      modalidad: json['modalidad'],
+      fecha_inicio: json['fecha_inicio_proyecto'],
+      fecha_limite: json['fecha_fin_proyecto'],
+      fecha_fin: json['fecha_limite_aplicacion'],
+      estado_proyecto: json['estado_proyecto'],
+      cupos_disponibles: json['cupos_disponibles'],
+      tipo_proyecto: json['tipo_proyecto'],
+      ubicacion: json['ubicacion_proyecto'],
+      nombre_carrera: json['nombre_carrera'],
+    );
+  }
 }
-/*"id": 1,
-            "id_empresa": 1,
-            "titulo": "Digitador de nuevo ingreso",
-            "descripcion": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "requisitos": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-            "id_estado_oferta": 1,
-            "id_modalidad": 1,
-            "fecha_inicio": "2024-11-03",
-            "fecha_fin": "2024-11-30",
-            "fecha_limite_aplicacion": "2024-11-12",
-            "estado_proyecto": 1,
-            "cupos_disponibles": 1,
-            "id_tipo_proyecto": 2,
-            "ubicacion": "San miguel, San Miguel",
-            "id_carrera": 22,*/

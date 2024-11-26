@@ -1,4 +1,5 @@
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/carreras.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_info_edit.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_login.dart';
@@ -60,13 +61,12 @@ class Api_Request {
       if(data is Map<String, dynamic>) {
         data['token'] = token;
       }
-      
       return User.fromJson(data);
 
     } else {
-      print('Error al obtener los datos del usuario: ${response.statusCode}');
-      print('Cuerpo de la respuesta: ${response.body}');
-      throw Exception('Error al obtener los datos del usuario');
+      //print('Error al obtener los datos del usuario: ${response.statusCode}');
+      //print('Cuerpo de la respuesta: ${response.body}');
+      return User.fromJson({'token': token});
     }
   }
   Future<List<Carreras>> getCarreras() async {
@@ -121,4 +121,40 @@ class Api_Request {
       throw Exception('Error al cerrar sesión');
     }
   }
+  Future<List<ProyectsModel>> getProyects(String token) async {
+    final response = await http.get(
+      Uri.parse('${baseUrl}proyectos'),
+      headers: {
+        'Authorization' : 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final List<dynamic> proyectosJson = jsonResponse['data'];
+      return proyectosJson.map((json) => ProyectsModel.fromJson(json)).toList();
+    } else {
+      print("Error al obtener las carreras. Código: ${response.statusCode}");
+      print("Cuerpo de la respuesta: ${response.body}");
+      throw Exception('Error al obtener las carreras');
+    }
+  }
+
+  Future<bool> editUserInfo(User_Info_Edit request, String token) async {
+    final response = await http.patch(
+      Uri.parse('${baseUrl}estudiantes/${request.id}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(request.toJson()),
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al editar la información del usuario: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+      return false;
+    }
+  }
+
 }

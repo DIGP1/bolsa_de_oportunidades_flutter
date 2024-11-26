@@ -1,8 +1,17 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:flutter/material.dart';
 
-class VistaProyecto extends StatelessWidget {
-  const VistaProyecto({super.key});
+class VistaProyecto extends StatefulWidget {
+  final ProyectsModel proyectsModel;
+  final User user;
+  const VistaProyecto({Key? key, required this.proyectsModel, required this.user}) : super(key: key);
 
+  @override
+  State<VistaProyecto> createState() => _VistaProyectoState();
+}
+
+class _VistaProyectoState extends State<VistaProyecto> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,9 +24,9 @@ class VistaProyecto extends StatelessWidget {
             pinned: true,
             backgroundColor: const Color(0xFF9C241C),
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'Desarrollador Flutter Senior',
-                style: TextStyle(fontSize: 16),
+              title: Text(
+                widget.proyectsModel.titulo, //Carga de titulo del proyecto
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               background: Container(
                 decoration: BoxDecoration(
@@ -64,16 +73,16 @@ class VistaProyecto extends StatelessWidget {
               ),
             ),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back, color: Colors.white,),
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.bookmark_border),
+                icon: const Icon(Icons.bookmark_border, color: Colors.white),
                 onPressed: () {},
               ),
               IconButton(
-                icon: const Icon(Icons.share),
+                icon: const Icon(Icons.share, color: Colors.white),
                 onPressed: () {},
               ),
             ],
@@ -88,19 +97,29 @@ class VistaProyecto extends StatelessWidget {
                     title: 'Información del Proyecto',
                     children: [
                       _buildInfoRow(
-                          Icons.business, 'Empresa:', 'TechCorp Inc.'),
+                          Icons.business, 'Empresa:', widget.proyectsModel.nombre_empresa), //Carga de empresa del proyecto
                       _buildInfoRow(
                         Icons.location_on,
                         'Ubicación:',
-                        'Ciudad de Guatemala',
+                        widget.proyectsModel.ubicacion, //Carga de ubicacion del proyecto
                       ),
-                      _buildInfoRow(Icons.access_time, 'Duración:', '6 meses'),
+                      _buildInfoRow(Icons.access_time, 'Duración:', widget.proyectsModel.fecha_inicio + ' hasta ' + widget.proyectsModel.fecha_fin), //Carga de fecha de inicio y fin del proyecto
+                      _buildInfoRow(
+                        Icons.paste_rounded,
+                        'Tipo de proyecto:',
+                        widget.proyectsModel.tipo_proyecto, //Carga de modalidad del proyecto
+                      ),
                       _buildInfoRow(
                         Icons.work,
                         'Modalidad:',
-                        'Tiempo completo',
+                        widget.proyectsModel.modalidad, //Carga de modalidad del proyecto
                       ),
-                      _buildInfoRow(Icons.group, 'Cupos:', '2 disponibles'),
+                      ...[
+                        if(widget.proyectsModel.cupos_disponibles == 1) 
+                          _buildInfoRow(Icons.group, 'Cupos:', '${widget.proyectsModel.cupos_disponibles} disponible')
+                        else 
+                          _buildInfoRow(Icons.group, 'Cupos:', '${widget.proyectsModel.cupos_disponibles} disponibles')
+                      ]
                     ],
                   ),
 
@@ -119,10 +138,6 @@ class VistaProyecto extends StatelessWidget {
                   // Requisitos
                   _buildRequirementsSection(),
 
-                  const SizedBox(height: 24),
-
-                  // Habilidades requeridas
-                  _buildSkillsSection(),
 
                   const SizedBox(height: 32),
 
@@ -232,9 +247,9 @@ class VistaProyecto extends StatelessWidget {
                 color: Colors.green.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                'Abierto',
-                style: TextStyle(
+              child: Text(
+                widget.proyectsModel.estado_oferta, //Carga de estado del proyecto
+                style: const TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
                 ),
@@ -244,17 +259,17 @@ class VistaProyecto extends StatelessWidget {
             _buildInfoRow(
               Icons.calendar_today,
               'Inicio:',
-              '01 Enero 2024',
+              widget.proyectsModel.fecha_inicio, //Carga de fecha de inicio del proyecto
             ),
             _buildInfoRow(
               Icons.event,
               'Finalización:',
-              '30 Junio 2024',
+              widget.proyectsModel.fecha_fin, //Carga de fecha de fin del proyecto
             ),
             _buildInfoRow(
               Icons.timer,
               'Límite para aplicar:',
-              '15 Diciembre 2023',
+              widget.proyectsModel.fecha_limite, //Carga de fecha límite para aplicar al proyecto
             ),
           ],
         ),
@@ -268,22 +283,22 @@ class VistaProyecto extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Padding(
+      child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Descripción',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'Buscamos un desarrollador Flutter Senior para unirse a nuestro equipo de desarrollo móvil. El candidato ideal debe tener experiencia en el desarrollo de aplicaciones móviles multiplataforma y conocimientos sólidos en Flutter y Dart.\n\nSerá responsable de diseñar, desarrollar y mantener aplicaciones móviles de alta calidad, trabajando en estrecha colaboración con nuestro equipo de diseño y backend.',
-              style: TextStyle(
+              widget.proyectsModel.descripcion, //Carga de descripción del proyecto
+              style: const TextStyle(
                 height: 1.5,
               ),
             ),
@@ -336,7 +351,7 @@ class VistaProyecto extends StatelessWidget {
     );
   }
 
-  Widget _buildSkillsSection() {
+  /*Widget _buildSkillsSection() {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -391,4 +406,5 @@ class VistaProyecto extends StatelessWidget {
       ),
     );
   }
+  */
 }

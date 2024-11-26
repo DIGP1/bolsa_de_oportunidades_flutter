@@ -1,6 +1,7 @@
 class User_register {
   final String email;
   final String password;
+  final String confirmPassword;
   final bool estadoUsuario;
   final String fechaRegistro;
   final String nombres;
@@ -17,6 +18,7 @@ class User_register {
   User_register({
     required this.email,
     required this.password,
+    required this.confirmPassword,
     required this.estadoUsuario,
     required this.fechaRegistro,
     required this.nombres,
@@ -35,6 +37,7 @@ class User_register {
     return {
       'email': email,
       'password': password,
+      'confirm_password': confirmPassword,
       'estado_usuario': estadoUsuario,
       'fecha_registro': fechaRegistro,
       'nombres': nombres,
