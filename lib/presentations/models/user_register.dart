@@ -37,7 +37,7 @@ class User_register {
     return {
       'email': email,
       'password': password,
-      'confirm_password': confirmPassword,
+      'password_confirmation': confirmPassword,
       'estado_usuario': estadoUsuario,
       'fecha_registro': fechaRegistro,
       'nombres': nombres,

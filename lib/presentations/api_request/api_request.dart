@@ -23,6 +23,8 @@ class Api_Request {
     if (response.statusCode == 201) {
       return true;
     } else {
+      print("Error en el registro. Código: ${response.statusCode}");
+      print("Cuerpo de la respuesta: ${response.body}");
       throw Exception('Error en el registro');
     }
   }

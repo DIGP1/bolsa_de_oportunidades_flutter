@@ -212,7 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: ()async {
                             if (_formKey.currentState!.validate()) {
-                              _user_login = User_login(email: _emailController!.text.toLowerCase(), password: _passwordController!.text);
+                              String _correo1 = _emailController!.text.substring(0,7).toUpperCase();
+                              String _correo2 = _emailController!.text.substring(7).toLowerCase();
+                              _user_login = User_login(email: _correo1+_correo2, password: _passwordController!.text);
                               _user = await _apiRequest.loginUser(_user_login!, context);
                               if (_user != null) {
                                 if(_user!.id_tipo_user == 3){

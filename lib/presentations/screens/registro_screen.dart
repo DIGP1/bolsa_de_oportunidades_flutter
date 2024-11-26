@@ -339,8 +339,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: _acceptTerms
                               ? () {
                                   if (_formKey.currentState!.validate()) {
+                                    String _correo1 = _correoController!.text.substring(0,7).toUpperCase();
+                                    String _correo2 = _correoController!.text.substring(7).toLowerCase();
+                                    print(_correo1+_correo2);
                                     User_register user_register = User_register(
-                                      email: _correoController!.text.toLowerCase(), //Se pasa el correo a minusculas para que no haya problemas en el inicio de sesión
+                                      email: _correo1+_correo2, //Se pasa el correo a minusculas para que no haya problemas en el inicio de sesión
                                       password: _passwordController!.text,
                                       confirmPassword: _confirmPasswordController!.text,
                                       estadoUsuario: true,
@@ -349,7 +352,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       apellidos: _apellidosController!.text,
                                       telefono: _telefonoController!.text,
                                       idCarrera: _idCarreraSeleccionada,
-                                      carnet: _correoController!.text.substring(0, 7),
+                                      carnet: _correoController!.text.substring(0, 7).toUpperCase(),
                                       anioEstudio: int.parse(_anioCarrera!),
                                       direccion: _direccionController!.text,
                                       tokenRecuperacion: '',
