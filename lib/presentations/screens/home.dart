@@ -51,8 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Guardados',
+            icon: Icon(Icons.check_circle),
+            label: 'Aplicados',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -312,13 +312,12 @@ class _HomeContentState extends State<HomeContent> {
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          physics:  const NeverScrollableScrollPhysics(),
           itemCount: proyects.length,
           itemBuilder: (context, index) {
             ProyectsModel proyect = proyects[index];
             return GestureDetector(
               onTap: () async{
-
                 var response = await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => VistaProyecto(proyectsModel: proyect, user: widget.user),
@@ -431,10 +430,6 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                         ],
                       ),
-                    ),
-                    const Icon(
-                      Icons.bookmark_border,
-                      color: Color(0xFF9C241C),
                     ),
                   ],
                 ),

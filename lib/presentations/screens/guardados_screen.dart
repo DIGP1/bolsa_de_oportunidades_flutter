@@ -35,7 +35,7 @@ Widget _buildHeader() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Trabajos Guardados',
+          'Trabajos Aplicados',
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -44,7 +44,7 @@ Widget _buildHeader() {
         ),
         SizedBox(height: 8),
         Text(
-          'Tus oportunidades favoritas',
+          'Tus oportunidades en las que has intentado aplicar',
           style: TextStyle(
             color: Colors.white70,
             fontSize: 16,
