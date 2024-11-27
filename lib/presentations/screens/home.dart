@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         //Lista donde se llaman las pantallas de buttonNavigationBar
         children:  [
           HomeContent(user: widget.user),
-          SavedJobsScreen(),
+          SavedJobsScreen(user: widget.user,),
           ProfileScreen(user: widget.user),
         ],
       ),

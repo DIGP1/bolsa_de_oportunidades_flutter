@@ -1,7 +1,54 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/aplicacion_model.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
 import 'package:flutter/material.dart';
+class SavedJobsScreen extends StatefulWidget {
+  final User user;
+  const SavedJobsScreen({Key? key, required this.user}) : super(key: key);
 
-class SavedJobsScreen extends StatelessWidget {
-  const SavedJobsScreen({super.key});
+  @override
+  State<SavedJobsScreen> createState() => _SavedJobsScreenState();
+}
+
+class _SavedJobsScreenState extends State<SavedJobsScreen> {
+  Api_Request api = Api_Request();
+  List<ProyectsModel> proyects = [];
+  List<AplicacionModel> aplicaciones = [];
+  bool _isLoading = true;
+  bool _isEmpy = true;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProyects_Aplicaciones();
+  }
+  @override
+  dispose() {
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    _loadProyects_Aplicaciones();
+  }
+  
+  Future<List<ProyectsModel>> _loadProyects_Aplicaciones() async {
+    proyects = await api.getProyects(widget.user.token);
+    aplicaciones = await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
+
+    Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
+    proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
+    _isEmpy = proyects.isEmpty;
+    _isLoading = false;
+    setState(() {_isLoading = false;});
+    return proyects;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +59,20 @@ class SavedJobsScreen extends StatelessWidget {
           children: [
             _buildHeader(),
             Expanded(
-              child: _buildSavedJobsList(),
-            ),
+              child: _isLoading ? const Center(child: CircularProgressIndicator()) : _isEmpy ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.work_off, size: 100, color: Color(0xFF9C241C)),
+                  const Text('No has aplicado a ningún proyecto', style: TextStyle(color: Color(0xFF9C241C), fontSize: 20),),
+                  ElevatedButton(onPressed: (){
+                    setState(() {
+                      _isLoading = true;
+                      _loadProyects_Aplicaciones();
+                    });
+                  }, child: Text("Actualizar Proyectos", style: TextStyle(color: Colors.white),), style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Color(0xFF9C241C)),),)
+                ],
+              ) : _buildRecentJobs()
+              ),
           ],
         ),
       ),
@@ -56,62 +115,138 @@ Widget _buildHeader() {
 }
 
 
- Widget _buildSavedJobsList() {
-  return ListView.builder(
-    padding: const EdgeInsets.all(16),
-    itemCount: 5,
-    itemBuilder: (context, index) {
-      return Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        elevation: 4,
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF9C241C).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.work,
-              color: Color(0xFF9C241C),
-            ),
-          ),
-          title: const Text(
-            'Título del Trabajo',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text(
-                'Empresa • Ubicación',
-                style: TextStyle(color: Colors.grey[600]),
+ Widget _buildRecentJobs() {
+    return Column(
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
+          physics:  const NeverScrollableScrollPhysics(),
+          itemCount: proyects.length,
+          itemBuilder: (context, index) {
+            ProyectsModel proyect = proyects[index];
+            return GestureDetector(
+              onTap: () async{
+                var response = await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => VistaProyecto(proyectsModel: proyect, user: widget.user),
+                  ),
+                );
+                if(response == null){   
+                  setState(() {
+                    _isLoading = true;
+                    _loadProyects_Aplicaciones();
+                  });
+                }
+              },
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF9C241C).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: 
+                      proyect.tipo_proyecto == 'Servicio Social'
+                        ? const Icon(Icons.query_builder_sharp, color: Color(0xFF9C241C),)
+                        : proyect.tipo_proyecto == 'Pasantía'
+                          ? const Icon(Icons.work,color: Color(0xFF9C241C),)
+                          : const SizedBox(),
+                     
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            proyect.titulo,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.business_outlined,
+                                size: 16,
+                                color: Color(0xFF9C241C),
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  proyect.nombre_empresa,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 155, 151, 151),
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Color(0xFF9C241C),
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  proyect.ubicacion,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 155, 151, 151),
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildTag(proyect.tipo_proyecto),
+                              const SizedBox(width: 8),
+                              _buildTag(proyect.modalidad),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8, 
-                runSpacing: 4, 
-                children: [
-                  _buildTag('Tiempo completo'),
-                  _buildTag('Remoto'),
-                ],
-              ),
-            ],
-          ),
-          trailing: IconButton(
-            icon: const Icon(
-              Icons.bookmark,
-              color: Color(0xFF9C241C),
-            ),
-            onPressed: () {},
-          ),
+            );
+          },
         ),
-      );
-    },
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildTag(String text) {
     return Container(

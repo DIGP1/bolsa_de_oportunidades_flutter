@@ -1,3 +1,5 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/aplicacion_model.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,43 @@ class VistaProyecto extends StatefulWidget {
 }
 
 class _VistaProyectoState extends State<VistaProyecto> {
+  Api_Request api_request = Api_Request();
+  var _color_button = const Color(0xFF9C241C);
+  var _text_button = "Aplicar ahora";
+  bool _action_button = true;
+  List<AplicacionModel> list_aplicaciones_estudiante = [];
+  AplicacionModel? aplicacionExistente;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    verificarAplicacion();
+  }
+  @override
+  void dispose() {
+   super.dispose();
+  }
+  
+
+  Future<void> verificarAplicacion() async {
+    list_aplicaciones_estudiante = await api_request.getAplicacionStudent(widget.user.token, widget.user.id_user);
+    bool existe = list_aplicaciones_estudiante.any((element) {
+      if (element.idProyecto == widget.proyectsModel.id) {
+      aplicacionExistente = element;
+      return true;
+      }
+      return false;
+    });
+    if (existe && aplicacionExistente != null) {
+      setState(() {
+      _color_button = Colors.green;
+      _text_button = "Aplicación enviada";
+      _action_button = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,18 +185,94 @@ class _VistaProyectoState extends State<VistaProyecto> {
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Implementar lógica de aplicación
+                      onPressed: () async{
+                        if(_action_button){
+                          AplicacionModel aplicacionModel = AplicacionModel(
+                            id: 0,
+                            idEstudiante: widget.user.id_user,
+                            idProyecto: widget.proyectsModel.id,
+                            idEstadoAplicacion: 1,
+                            comentariosEmpresa: '',
+                          );
+                          if(await api_request.applyProyect(aplicacionModel, widget.user.token, context)){
+                            setState(() {
+                              _color_button = Colors.green;
+                              _text_button = "Aplicación enviada";
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Aplicación enviada correctamente'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Error al enviar la aplicación'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }else{
+                            showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                              title: const Text('Eliminar Aplicación'),
+                              content: const Text('Ya has aplicado a este proyecto. ¿Realmente deseas eliminar tu aplicación?'),
+                              actions: [
+                                TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  
+                                },
+                                child: const Text('No'),
+                                ),
+                                TextButton(
+                                onPressed: () async{
+                                  bool flag = await api_request.deleteAplicacion(aplicacionExistente!.id, widget.user.token);
+                                    setState(() {
+                                      if(flag){
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Aplicación eliminada correctamente'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );}
+                                      else{
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Error al eliminar la aplicación'),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                      _color_button = const Color(0xFF9C241C);
+                                      _text_button = "Aplicar ahora";
+                                      _action_button = true;
+                                      Navigator.of(context).pop();
+                                    });
+                                    
+                                },
+                                child: const Text('Sí'),
+                                ),
+                              ],
+                              );
+                            },
+                            );
+                        }
+                        
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF9C241C),
+                        backgroundColor: _color_button,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Aplicar ahora',
-                        style: TextStyle(
+                      child: Text(
+                        _text_button,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,

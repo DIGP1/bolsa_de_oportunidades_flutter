@@ -1,3 +1,4 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/aplicacion_model.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/carreras.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
@@ -159,4 +160,60 @@ class Api_Request {
     }
   }
 
+  Future<bool> applyProyect(AplicacionModel aplicacion, String token, BuildContext context) async {
+    final response = await http.post(
+      Uri.parse('${baseUrl}aplicaciones'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(aplicacion.toJson()),
+    );
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      print('Error al aplicar al proyecto: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al aplicar al proyecto', style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+  }
+  Future<List<AplicacionModel>> getAplicacionStudent(String token, int id_estudiante) async {
+    List<AplicacionModel> aplicaciones = [];
+    final response = await http.get(
+      Uri.parse('${baseUrl}aplicaciones/estudiante/$id_estudiante'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      final List<dynamic> aplicacionesJson = jsonResponse['data'];
+      return aplicacionesJson.map((json) => AplicacionModel.fromJson(json)).toList();
+    } else {
+      print("Error al obtener las aplicaciones. Código: ${response.statusCode}");
+      print("Cuerpo de la respuesta: ${response.body}");
+      return aplicaciones;
+    }
+  }
+  Future<bool> deleteAplicacion(int id, String token) async {
+    final response = await http.delete(
+      Uri.parse('${baseUrl}aplicaciones/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al eliminar la aplicación: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+      return false;
+    }
+  }
 }
