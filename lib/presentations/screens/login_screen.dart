@@ -6,6 +6,7 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/recuperation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -198,7 +199,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           Flexible(
                             child: TextButton(
                               onPressed: () {
-                                // Implementar recuperación de contraseña
+                                // segun el archivo recuperation.dart has la logica para que mande a llamaar la vissta de recuperacion
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PasswordRecoveryScreen(),
+                                  ),
+                                );
                               },
                               child: const Text('¿Olvidaste tu contraseña?',
                                   style: TextStyle(color: Color(0xFF9C241C))),
@@ -294,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              'O continúa con',
+                              '',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ),
