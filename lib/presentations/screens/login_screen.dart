@@ -6,6 +6,7 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/recuperation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -60,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white.withOpacity(0.1), //color de fondo
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Image.asset('assets/ues.jpeg' // Ruta de imagen
+                    child: Image.asset('assets/logo_ues.jpg' // Ruta de imagen
                         ),
                   ),
                 ),
@@ -197,7 +199,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           Flexible(
                             child: TextButton(
                               onPressed: () {
-                                // Implementar recuperación de contraseña
+                                // segun el archivo recuperation.dart has la logica para que mande a llamaar la vissta de recuperacion
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PasswordRecoveryScreen(),
+                                  ),
+                                );
                               },
                               child: const Text('¿Olvidaste tu contraseña?',
                                   style: TextStyle(color: Color(0xFF9C241C))),
@@ -210,36 +219,60 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
-                          onPressed: ()async {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              String _correo1 = _emailController!.text.substring(0,7).toUpperCase();
-                              String _correo2 = _emailController!.text.substring(7).toLowerCase();
-                              _user_login = User_login(email: _correo1+_correo2, password: _passwordController!.text);
-                              _user = await _apiRequest.loginUser(_user_login!, context);
+                              String _correo1 = _emailController!.text
+                                  .substring(0, 7)
+                                  .toUpperCase();
+                              String _correo2 = _emailController!.text
+                                  .substring(7)
+                                  .toLowerCase();
+                              _user_login = User_login(
+                                  email: _correo1 + _correo2,
+                                  password: _passwordController!.text);
+                              _user = await _apiRequest.loginUser(
+                                  _user_login!, context);
                               if (_user != null) {
-                                if(_user!.id_tipo_user == 3){
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('user_token', _user!.token);
+                                if (_user!.id_tipo_user == 3) {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setString(
+                                      'user_token', _user!.token);
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Inicio de sesión exitoso", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
-                                      backgroundColor: Color.fromARGB(255, 31, 145, 35),
+                                    const SnackBar(
+                                      content: Text(
+                                        "Inicio de sesión exitoso",
+                                        style: TextStyle(color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                        textScaler: TextScaler.linear(1.5),
+                                      ),
+                                      backgroundColor:
+                                          Color.fromARGB(255, 31, 145, 35),
                                     ),
                                   );
-                                  await Future.delayed(const Duration(seconds: 2));
+                                  await Future.delayed(
+                                      const Duration(seconds: 2));
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => HomeScreen(user: _user!),
+                                      builder: (context) =>
+                                          HomeScreen(user: _user!),
                                     ),
                                   );
-                                }else{
+                                } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Usuario no autorizado", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
-                                      backgroundColor: Color.fromARGB(255, 145, 31, 31),
+                                    const SnackBar(
+                                      content: Text(
+                                        "Usuario no autorizado",
+                                        style: TextStyle(color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                        textScaler: TextScaler.linear(1.5),
+                                      ),
+                                      backgroundColor:
+                                          Color.fromARGB(255, 145, 31, 31),
                                     ),
                                   );
                                 }
-                                
                               }
                             }
                           },
@@ -269,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              'O continúa con',
+                              '',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ),
