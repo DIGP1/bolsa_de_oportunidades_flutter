@@ -6,7 +6,6 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_scre
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
 import 'package:flutter/material.dart';
 
-
 class HomeScreen extends StatefulWidget {
   final User user; 
   const HomeScreen({Key? key, required this.user}) : super(key: key); 
@@ -17,14 +16,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   
-  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
   
-
   @override
   Widget build(BuildContext context) {
     //Para usar el usuario que inicio sesion tienen que poner widget.user
@@ -79,10 +76,14 @@ class _HomeContentState extends State<HomeContent> {
   TextEditingController? _searchController;
   List<ProyectsModel> originalProyects = [];
 
-
   Future<void> _loadProyects() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       List<ProyectsModel> list_proyects = await api.getProyects(widget.user.token);
+      list_proyects = list_proyects.reversed.toList();
+
       setState(() {
         proyects = list_proyects;
         originalProyects = list_proyects;
@@ -101,16 +102,16 @@ class _HomeContentState extends State<HomeContent> {
       });
     }
   }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _searchController = TextEditingController();
     _loadProyects();
   }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _searchController!.dispose();
     super.dispose();
   }
@@ -122,14 +123,20 @@ class _HomeContentState extends State<HomeContent> {
         children: [
           _buildHeader(),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  //_buildCategories(context),
-                  _isLoading ? const Center(child: CircularProgressIndicator()) : _buildRecentJobs(),
-                ],
-              ),
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: _loadProyects,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          //_buildCategories(context),
+                          _buildRecentJobs(),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -220,15 +227,15 @@ class _HomeContentState extends State<HomeContent> {
                       color: Colors.black87,
                     ),
                     onChanged: (value) {
-                        setState(() {
+                      setState(() {
                         if (value.isEmpty) {
                           proyects = originalProyects;
                         } else {
                           proyects = originalProyects.where((proyect) {
-                          return proyect.titulo.toLowerCase().contains(value.toLowerCase());
+                            return proyect.titulo.toLowerCase().contains(value.toLowerCase());
                           }).toList();
                         }
-                        });
+                      });
                     },
                   ),
                 ),
@@ -246,80 +253,15 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
- /* Widget _buildCategories(BuildContext context) {
-    final categories = [
-      {'icon': Icons.computer, 'name': 'Tecnología'},
-      {'icon': Icons.brush, 'name': 'Diseño'},
-      {'icon': Icons.business, 'name': 'Negocios'},
-      {'icon': Icons.school, 'name': 'Educación'},
-    ];
-
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.12,
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Center(
-        child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * 0.05,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            return Container(
-              width: MediaQuery.of(context).size.width * 0.18,
-              margin: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.015,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    categories[index]['icon'] as IconData,
-                    color: const Color(0xFF9C241C),
-                    size: MediaQuery.of(context).size.width * 0.06,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    categories[index]['name'] as String,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.025,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-  */
   Widget _buildRecentJobs() {
     return Column(
       children: [
-       const Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Trabajos Recientes',
                 style: TextStyle(
                   fontSize: 20,
@@ -331,28 +273,26 @@ class _HomeContentState extends State<HomeContent> {
         ),
         ListView.builder(
           shrinkWrap: true,
-          physics:  const NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: proyects.length,
           itemBuilder: (context, index) {
             ProyectsModel proyect = proyects[index];
             return GestureDetector(
-              onTap: () async{
+              onTap: () async {
                 var response = await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => VistaProyecto(proyectsModel: proyect, user: widget.user),
                   ),
                 );
-                if(response == null){   
+                if (response == null) {
                   setState(() {
                     _isLoading = true;
                     _loadProyects();
                   });
-                  
                 }
               },
               child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -375,13 +315,11 @@ class _HomeContentState extends State<HomeContent> {
                         color: const Color(0xFF9C241C).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: 
-                      proyect.tipo_proyecto == 'Servicio Social'
-                        ? const Icon(Icons.query_builder_sharp, color: Color(0xFF9C241C),)
-                        : proyect.tipo_proyecto == 'Pasantía'
-                          ? const Icon(Icons.work,color: Color(0xFF9C241C),)
-                          : const SizedBox(),
-                     
+                      child: proyect.tipo_proyecto == 'Servicio Social'
+                          ? const Icon(Icons.query_builder_sharp, color: Color(0xFF9C241C))
+                          : proyect.tipo_proyecto == 'Pasantía'
+                              ? const Icon(Icons.work, color: Color(0xFF9C241C))
+                              : const SizedBox(),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
