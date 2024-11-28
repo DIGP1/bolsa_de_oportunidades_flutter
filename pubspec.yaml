@@ -21,4 +21,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/logo_ues.jpg
+    - assets/logo.png

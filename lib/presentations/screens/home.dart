@@ -7,21 +7,21 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proye
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  final User user; 
-  const HomeScreen({Key? key, required this.user}) : super(key: key); 
+  final User user;
+  const HomeScreen({Key? key, required this.user}) : super(key: key);
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     //Para usar el usuario que inicio sesion tienen que poner widget.user
@@ -30,9 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _selectedIndex,
         //Lista donde se llaman las pantallas de buttonNavigationBar
-        children:  [
+        children: [
           HomeContent(user: widget.user),
-          SavedJobsScreen(user: widget.user,),
+          SavedJobsScreen(
+            user: widget.user,
+          ),
           ProfileScreen(user: widget.user),
         ],
       ),
@@ -81,7 +83,8 @@ class _HomeContentState extends State<HomeContent> {
       _isLoading = true;
     });
     try {
-      List<ProyectsModel> list_proyects = await api.getProyects(widget.user.token);
+      List<ProyectsModel> list_proyects =
+          await api.getProyects(widget.user.token);
       list_proyects = list_proyects.reversed.toList();
 
       setState(() {
@@ -180,7 +183,7 @@ class _HomeContentState extends State<HomeContent> {
                         ),
                       ),
                       Text(
-                        'Encuentra tu trabajo ideal',
+                        'Encuentra tu oportunidad ideal',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 18,
@@ -232,7 +235,9 @@ class _HomeContentState extends State<HomeContent> {
                           proyects = originalProyects;
                         } else {
                           proyects = originalProyects.where((proyect) {
-                            return proyect.titulo.toLowerCase().contains(value.toLowerCase());
+                            return proyect.titulo
+                                .toLowerCase()
+                                .contains(value.toLowerCase());
                           }).toList();
                         }
                       });
@@ -281,7 +286,8 @@ class _HomeContentState extends State<HomeContent> {
               onTap: () async {
                 var response = await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => VistaProyecto(proyectsModel: proyect, user: widget.user),
+                    builder: (context) => VistaProyecto(
+                        proyectsModel: proyect, user: widget.user),
                   ),
                 );
                 if (response == null) {
@@ -292,7 +298,8 @@ class _HomeContentState extends State<HomeContent> {
                 }
               },
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -316,7 +323,8 @@ class _HomeContentState extends State<HomeContent> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: proyect.tipo_proyecto == 'Servicio Social'
-                          ? const Icon(Icons.query_builder_sharp, color: Color(0xFF9C241C))
+                          ? const Icon(Icons.query_builder_sharp,
+                              color: Color(0xFF9C241C))
                           : proyect.tipo_proyecto == 'Pasantía'
                               ? const Icon(Icons.work, color: Color(0xFF9C241C))
                               : const SizedBox(),
