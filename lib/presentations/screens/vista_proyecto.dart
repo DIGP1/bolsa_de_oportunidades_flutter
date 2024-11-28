@@ -198,6 +198,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
                             setState(() {
                               _color_button = Colors.green;
                               _text_button = "Aplicación enviada";
+                              _action_button = false;
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -234,6 +235,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
                                   bool flag = await api_request.deleteAplicacion(aplicacionExistente!.id, widget.user.token);
                                     setState(() {
                                       if(flag){
+                                        _action_button = true;
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text('Aplicación eliminada correctamente'),
