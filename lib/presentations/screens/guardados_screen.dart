@@ -47,7 +47,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
     proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
     _isEmpy = proyects.isEmpty;
-    proyects = proyects.reversed.toList();
+    //proyects = proyects.reversed.toList();
     setState(() {
       _isLoading = false;
     });

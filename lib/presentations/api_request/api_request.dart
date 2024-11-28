@@ -175,8 +175,8 @@ class Api_Request {
       print('Error al aplicar al proyecto: ${response.statusCode}');
       print('Cuerpo de la respuesta: ${response.body}');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error al aplicar al proyecto', style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+        SnackBar(
+          content: Text('Error al aplicar al proyecto codigo: ${response.statusCode} cuerpo: ${response.body}', style: const TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
           backgroundColor: Colors.red,
         ),
       );

@@ -18,7 +18,7 @@ class User {
   // Método factory para crear una instancia de User desde la respuesta JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id_user: json['user']['id'],
+      id_user: json['estudiante_id'],
       email: json['user']['email'],
       id_tipo_user: json['user']['id_tipo_usuario'],
       estado_usuario: json['user']['estado_usuario'],
