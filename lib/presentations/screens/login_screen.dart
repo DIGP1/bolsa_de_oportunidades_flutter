@@ -56,17 +56,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Logo o imagen de la app
                 Center(
                   child: Container(
-                    height: 150,
-                    width: 200,
+                    height: 175,
+                    width: 275,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1), //color de fondo
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Image.asset('assets/logo_ues.jpg' // Ruta de imagen
+                    child: Image.asset('assets/logo.png' // Ruta de imagen
                         ),
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 3),
                 const Center(
                   child: Text(
                     '¡Bienvenido!',

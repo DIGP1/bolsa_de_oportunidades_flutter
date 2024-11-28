@@ -15,15 +15,24 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   Future<Widget> _getInitialScreen() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('user_token');
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('user_token');
-    if (token != null && token.isNotEmpty) {
-      User user = await Api_Request().loginUserOpened(token);
-      return HomeScreen(user: user,); // Ajusta según tu modelo
-    } else {
-      // Si no hay token, mostrar LoginScreen
-      return const LoginScreen();
+      if (token != null && token.isNotEmpty) {
+        // Uncomment and modify this section if you want to implement token-based authentication
+        // User user = await Api_Request().loginUserOpened(token);
+        // return HomeScreen(
+        //   user: user,
+        // );
+        return const LoginScreen(); // Temporary return until authentication is implemented
+      } else {
+        await prefs.remove('user_token');
+        return const LoginScreen();
+      }
+    } catch (e) {
+      // Handle any errors that might occur during initialization
+      return const Center(child: Text("Error initializing app"));
     }
   }
 
@@ -36,19 +45,26 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFF9C241C),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: FutureBuilder(
+      home: FutureBuilder<Widget>(
         future: _getInitialScreen(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           }
           if (snapshot.hasError) {
-            return const Center(child: Text("Error al cargar la app"));
+            return const Scaffold(
+              body: Center(
+                child: Text("Error al cargar la app"),
+              ),
+            );
           }
-          return snapshot.data as Widget;
+          return snapshot.data ?? const LoginScreen();
         },
       ),
     );
   }
 }
-
