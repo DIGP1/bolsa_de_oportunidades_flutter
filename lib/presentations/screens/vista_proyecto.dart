@@ -442,11 +442,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
               ),
             ),
             const SizedBox(height: 16),
-            _buildRequirementItem(
-                'Estudiante activo de Ingeniería en Sistemas'),
-            _buildRequirementItem('Promedio mínimo de 75 puntos'),
-            _buildRequirementItem('Disponibilidad de horario'),
-            _buildRequirementItem('Capacidad de trabajo en equipo'),
+            for (var req in widget.proyectsModel.requisitos) _buildRequirementItem(req),
           ],
         ),
       ),

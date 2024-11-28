@@ -3,7 +3,7 @@ class ProyectsModel {
   final String nombre_empresa;
   final String titulo;
   final String descripcion;
-  final String requisitos;
+  final List<String> requisitos; // Cambiar de String a List<String>
   final String estado_oferta;
   final String modalidad;
   final String fecha_inicio;
@@ -39,7 +39,7 @@ class ProyectsModel {
       nombre_empresa: json['nombre_empresa'],
       titulo: json['titulo_proyecto'],
       descripcion: json['descripcion_proyeto'],
-      requisitos: json['requisitos_proyecto'],
+      requisitos: List<String>.from(json['requisitos_proyecto']), // Convertir lista JSON a List<String>
       estado_oferta: json['estado_oferta'],
       modalidad: json['modalidad'],
       fecha_inicio: json['fecha_inicio_proyecto'],
@@ -53,3 +53,4 @@ class ProyectsModel {
     );
   }
 }
+

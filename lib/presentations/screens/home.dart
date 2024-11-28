@@ -76,6 +76,8 @@ class _HomeContentState extends State<HomeContent> {
   Api_Request api = Api_Request();
   List<ProyectsModel> proyects = [];
   bool _isLoading = true;
+  TextEditingController? _searchController;
+  List<ProyectsModel> originalProyects = [];
 
 
   Future<void> _loadProyects() async {
@@ -83,6 +85,7 @@ class _HomeContentState extends State<HomeContent> {
       List<ProyectsModel> list_proyects = await api.getProyects(widget.user.token);
       setState(() {
         proyects = list_proyects;
+        originalProyects = list_proyects;
         _isLoading = false;
       });
     } catch (e) {
@@ -102,7 +105,14 @@ class _HomeContentState extends State<HomeContent> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _searchController = TextEditingController();
     _loadProyects();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _searchController!.dispose();
+    super.dispose();
   }
 
   @override
@@ -195,6 +205,7 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Buscar propuesta...',
                       hintStyle: TextStyle(
@@ -209,7 +220,15 @@ class _HomeContentState extends State<HomeContent> {
                       color: Colors.black87,
                     ),
                     onChanged: (value) {
-                      // Aquí puedes manejar los cambios en el texto
+                        setState(() {
+                        if (value.isEmpty) {
+                          proyects = originalProyects;
+                        } else {
+                          proyects = originalProyects.where((proyect) {
+                          return proyect.titulo.toLowerCase().contains(value.toLowerCase());
+                          }).toList();
+                        }
+                        });
                     },
                   ),
                 ),

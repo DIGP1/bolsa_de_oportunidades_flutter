@@ -216,4 +216,21 @@ class Api_Request {
       return false;
     }
   }
+  Future<int> getProyectCount(String token) async {
+    final response = await http.get(
+      Uri.parse('${baseUrl}proyectos/count'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      print("Cantidad de proyectos: ${jsonResponse['cantidad']}");
+      return jsonResponse['cantidad'];
+    } else {
+      print('Error al obtener el conteo de proyectos: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+      return 0;
+    }
+  }
 }
