@@ -236,8 +236,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (_user!.id_tipo_user == 3) {
                                   final prefs =
                                       await SharedPreferences.getInstance();
+                                  final prefs2 =
+                                      await SharedPreferences.getInstance();
                                   await prefs.setString(
                                       'user_token', _user!.token);
+                                      await prefs2.setInt('user_id', _user!.id_user);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(

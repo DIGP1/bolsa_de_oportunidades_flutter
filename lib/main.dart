@@ -15,24 +15,19 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   Future<Widget> _getInitialScreen() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('user_token');
 
-      if (token != null && token.isNotEmpty) {
-        // Uncomment and modify this section if you want to implement token-based authentication
-        // User user = await Api_Request().loginUserOpened(token);
-        // return HomeScreen(
-        //   user: user,
-        // );
-        return const LoginScreen(); // Temporary return until authentication is implemented
-      } else {
-        await prefs.remove('user_token');
-        return const LoginScreen();
-      }
-    } catch (e) {
-      // Handle any errors that might occur during initialization
-      return const Center(child: Text("Error initializing app"));
+    final prefs = await SharedPreferences.getInstance();
+    final prefs2 = await SharedPreferences.getInstance();
+    final token = prefs.getString('user_token');
+    final id_estudiante = prefs2.getInt('user_id');
+    
+    if (token != null && token.isNotEmpty && id_estudiante != null) {
+      User user = await Api_Request().loginUserOpened(token, id_estudiante);
+      print("token: ${user.token}, id: ${user.id_user}");
+      return HomeScreen(user: user); // Ajusta según tu modelo
+    } else {
+      // Si no hay token, mostrar LoginScreen
+      return const LoginScreen();
     }
   }
 

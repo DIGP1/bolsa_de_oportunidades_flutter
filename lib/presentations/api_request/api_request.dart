@@ -52,7 +52,7 @@ class Api_Request {
       throw Exception('Error en el login');
     }
   }
-    Future<User> loginUserOpened(String token) async {
+    Future<User> loginUserOpened(String token, int id_estudianteS) async {
     final response = await http.get(
       Uri.parse('${baseUrl}me'),
       headers: {
@@ -63,6 +63,7 @@ class Api_Request {
       var data = jsonDecode(response.body);
       if(data is Map<String, dynamic>) {
         data['token'] = token;
+        data['estudiante_id'] = id_estudianteS;
       }
       return User.fromJson(data);
 
