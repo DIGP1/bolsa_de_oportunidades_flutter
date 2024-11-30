@@ -4,6 +4,7 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/guardados_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/notifications_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -194,10 +195,11 @@ class _HomeContentState extends State<HomeContent> {
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.notifications_outlined,
-                    color: Colors.white),
+                icon: const Icon(Icons.notifications_outlined, color: Colors.white),
                 onPressed: () {
-                  // Manejar notificaciones
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                  );
                 },
               ),
             ],
