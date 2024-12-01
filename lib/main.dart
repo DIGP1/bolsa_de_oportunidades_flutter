@@ -5,9 +5,14 @@ import 'package:bolsa_de_oportunidades_flutter/presentations/screens/login_scree
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_messaging.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //messaging
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotifications(); 
   runApp(const MyApp());
 }
 

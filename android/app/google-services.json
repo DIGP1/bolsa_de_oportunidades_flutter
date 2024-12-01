@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "315095609855",
+    "project_id": "bolsadeoportunidades-7c88c",
+    "storage_bucket": "bolsadeoportunidades-7c88c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315095609855:android:d9893330ca50e59d03b7ca",
+        "android_client_info": {
+          "package_name": "com.example.bolsa_de_oportunidades_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbc3WxfnIUTECf2mxoHKtaxFNnGXmyIn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
