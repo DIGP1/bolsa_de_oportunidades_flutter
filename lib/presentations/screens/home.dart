@@ -16,26 +16,45 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  PageController _pageController = PageController();
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //Para usar el usuario que inicio sesion tienen que poner widget.user
     return Scaffold(
       backgroundColor: Colors.white,
-      body: IndexedStack(
-        index: _selectedIndex,
-        //Lista donde se llaman las pantallas de buttonNavigationBar
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         children: [
           HomeContent(user: widget.user),
-          SavedJobsScreen(
-            user: widget.user,
-          ),
+          SavedJobsScreen(user: widget.user),
           ProfileScreen(user: widget.user),
         ],
       ),
@@ -63,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
 
 class HomeContent extends StatefulWidget {
   final User user;

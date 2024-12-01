@@ -168,6 +168,10 @@ Widget _buildHeader(User user) {
           _buildListTile(context,api,widget,userInfo,Icons.person_outline, 'Editar Perfil'),
         ]),
         const SizedBox(height: 15),
+        _buildSection('Información sobre proyectos', [
+          _buildListTile(context,api,widget,userInfo,Icons.business, 'Proyecto Asignado'),
+        ]),
+        const SizedBox(height: 15),
         _buildSection('Cuenta', [
           _buildListTile(context,api,widget,userInfo,Icons.logout, 'Cerrar Sesión', color: Colors.red),
         ]),
