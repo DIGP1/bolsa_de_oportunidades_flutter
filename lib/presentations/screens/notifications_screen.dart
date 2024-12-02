@@ -47,122 +47,59 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
         centerTitle: true, // Centra el título
         backgroundColor: const Color(0xFF9C241C),
+        elevation: 4,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[100], // Fondo sutil
-        ),
-        child: notifications.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.notifications_none,
-                      size: 80,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No hay notificaciones',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      leading: const CircleAvatar(
-                        backgroundColor: Color(0xFF9C241C),
-                        child: Icon(
-                          Icons.notifications,
-                          color: Colors.white,
-                        ),
-                      ),
-                      title: Text(
-                        notifications[index],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Color(0xFF9C241C),
-                        ),
-                        onPressed: () {
-                          // Acción al presionar la notificación individual
-                        },
-                      ),
-                    ),
-                  );
-                },
+      body: notifications.isEmpty
+          ? const Center(
+              child: Text(
+                'No hay notificaciones para mostrar',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-      ),
-      floatingActionButton: notifications.isEmpty
-          ? null // No muestra el botón si no hay notificaciones
-          : FloatingActionButton.extended(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Limpiar notificaciones'),
-                      content: const Text(
-                        '¿Estás seguro de que deseas eliminar todas las notificaciones?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancelar'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            _clearNotifications();
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text(
-                            'Eliminar',
-                            style: TextStyle(color: Color(0xFF9C241C)),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+            )
+          : ListView.separated(
+              itemCount: notifications.length,
+              separatorBuilder: (context, index) => const Divider(
+                color: Colors.grey,
+                thickness: 0.8,
+                indent: 16,
+                endIndent: 16,
+              ),
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: const Color(0xFF9C241C),
+                    child: const Icon(Icons.notifications, color: Colors.white),
+                  ),
+                  title: Text(
+                    notifications[index],
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  subtitle: Text(
+                    'Recibido: ${DateTime.now().toLocal()}',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        notifications.removeAt(index);
+                      });
+                      _saveNotifications();
+                    },
+                  ),
                 );
               },
-              backgroundColor: const Color(0xFF9C241C),
-              icon: const Icon(
-                Icons.delete_outline,
-                color: Colors.white,
-              ),
-              label: const Text(
-                'Limpiar todo',
-                style: TextStyle(color: Colors.white),
-              ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _clearNotifications,
+        child: const Icon(Icons.delete_sweep),
+        backgroundColor: const Color(0xFF9C241C),
+      ),
     );
+  }
+
+  Future<void> _saveNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('notifications', notifications);
   }
 }

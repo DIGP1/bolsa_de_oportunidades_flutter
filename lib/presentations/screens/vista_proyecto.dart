@@ -23,6 +23,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
   AplicacionModel? aplicacionExistente;
   bool _in_Proyect = false;
   bool _in_this_Proyect = false;
+  int _id_proyecto = 0;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
       }
       return false;
     });
+    print("Aplicacion existente: ${aplicacionExistente!.id}");
     if (existe && aplicacionExistente != null) {
       if (_in_Proyect) {
         if (_in_this_Proyect) {
@@ -257,14 +259,16 @@ class _VistaProyectoState extends State<VistaProyecto> {
                               idEstadoAplicacion: 1,
                               comentariosEmpresa: '',
                             );
-                            if (await api_request.applyProyect(
-                                aplicacionModel, widget.user.token, context)) {
+                            _id_proyecto = await api_request.applyProyect(
+                                aplicacionModel, widget.user.token, context);
+                            if ( _id_proyecto != 0) {
                               setState(() {
                                 _color_button = Colors.red; // Cambiado a rojo
                                 _text_button =
                                     "Eliminar ahora"; // Cambiado el texto
                                 _action_button = false;
                               });
+                              verificarAplicacion();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content:
@@ -313,6 +317,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
                                                 backgroundColor: Colors.green,
                                               ),
                                             );
+                                            verificarAplicacion();
                                           } else {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
