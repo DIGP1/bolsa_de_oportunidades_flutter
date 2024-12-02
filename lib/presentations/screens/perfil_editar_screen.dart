@@ -14,55 +14,43 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-
-  //Llamado a la clase de la api
   Api_Request api = Api_Request();
-  //Variables donde estara la seleccion de los dropdownbutton
   int _idCarreraSeleccionada = 0;
   String? _anioCarrera;
-  //Lista de carreras para el dropdownbutton
   List<Carreras> listaCarreras = [];
   Carreras? _carreraSeleccionada;
+  bool _isLoading = true;
 
-  bool _isLoading = true; // Bandera para mostrar un indicador de carga
-
-
-  //Controladores de los textFields
   TextEditingController? _telefonoController;
   TextEditingController? _direccionController;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _telefonoController =TextEditingController();
+    _telefonoController = TextEditingController();
     _direccionController = TextEditingController();
-
-    //Asignando valores a los EditText
     _telefonoController!.text = widget.userinfo.telefono;
     _direccionController!.text = widget.userinfo.direccion;
-
     _fetchCarreras();
     _anioCarrera = widget.userinfo.anio_estudio.toString();
-    
   }
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _direccionController!.dispose();
     _telefonoController!.dispose();
     super.dispose();
   }
 
-    Future<void> _fetchCarreras() async {
+  Future<void> _fetchCarreras() async {
     try {
       List<Carreras> carreras = await api.getCarreras();
       setState(() {
         listaCarreras = carreras;
         _carreraSeleccionada = listaCarreras.firstWhere(
-      (carrera) => carrera.id == widget.userinfo.id_carrera,
-      orElse: () => Carreras(),
-    );
+          (carrera) => carrera.id == widget.userinfo.id_carrera,
+          orElse: () => Carreras(),
+        );
         _idCarreraSeleccionada = _carreraSeleccionada!.id!;
         _isLoading = false;
       });
@@ -73,6 +61,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,218 +82,246 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         elevation: 0.5,
         centerTitle: true,
       ),
-      body:  _isLoading ? const Center(child: CircularProgressIndicator()) : SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header con foto de perfil
-              Container(
-                width: double.infinity,
-                color: Colors.white,
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFF9C241C),
-                              width: 3,
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator()) 
+        : SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Header con foto de perfil
+                            Container(
+                              color: Colors.white,
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFF9C241C),
+                                        width: 3,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 65,
+                                      color: Color(0xFF9C241C),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    '${widget.userinfo.nombres} ${widget.userinfo.apellidos}',
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                  const Text(
+                                    'Estudiante',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 65,
-                            color: Color(0xFF9C241C),
-                          ),
-                        ),
-                        
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '${widget.userinfo.nombres} ${widget.userinfo.apellidos}',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Text(
-                      'Estudiante',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionTitle('Información Personal'),
-                    const SizedBox(height: 10),
-                    _buildNonEditableField(
-                      'Nombres',
-                      widget.userinfo.nombres,//Aasignacion del nombre del estudiante
-                      Icons.person_outline,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildNonEditableField(
-                      'Apellidos',
-                      widget.userinfo.apellidos,
-                      Icons.person_outline,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildNonEditableField(
-                      'Correo',
-                      widget.userinfo.email,
-                      Icons.email_outlined,
-                    ),
-                    const SizedBox(height: 24),
-                    
-                    _buildSectionTitle('Información de Contacto'),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _telefonoController,
-                      keyboardType: TextInputType.phone,
-                      decoration: _buildInputDecoration(
-                        'Teléfono',
-                        Icons.phone_outlined,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _direccionController,
-                      decoration: _buildInputDecoration(
-                        'Dirección',
-                        Icons.location_on_outlined,
-                      ),
-                      maxLines: 2,
-                    ),
-                    const SizedBox(height: 16),
+                            
+                            const SizedBox(height: 16),
+                            _buildSectionTitle('Información Personal'),
+                            const SizedBox(height: 10),
+                            _buildNonEditableField(
+                              'Nombres',
+                              widget.userinfo.nombres,
+                              Icons.person_outline,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildNonEditableField(
+                              'Apellidos',
+                              widget.userinfo.apellidos,
+                              Icons.person_outline,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildNonEditableField(
+                              'Correo',
+                              widget.userinfo.email,
+                              Icons.email_outlined,
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            _buildSectionTitle('Información de Contacto'),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _telefonoController,
+                              keyboardType: TextInputType.phone,
+                              decoration: _buildInputDecoration(
+                                'Teléfono',
+                                Icons.phone_outlined,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _direccionController,
+                              decoration: _buildInputDecoration(
+                                'Dirección',
+                                Icons.location_on_outlined,
+                              ),
+                              maxLines: null,
+                              minLines: 2,
+                            ),
+                            const SizedBox(height: 16),
 
-                    _buildSectionTitle('Información Académica'),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<Carreras>(
-                      decoration: _buildInputDecoration('Carrera', Icons.school_outlined),
-                      value: _carreraSeleccionada,
-                        items: listaCarreras.map<DropdownMenuItem<Carreras>>((Carreras value){
-                          return DropdownMenuItem<Carreras>(value: value, child: Text(value.nombre_carrera!));
-                        }).toList(),
-                        validator: (value){
-                          if (value == null) {
-                            return "Por favor, selecciona una opcion";
-                          }
-                          return null;
-                        },
-                        onChanged: (value){
-                          setState(() {
-                            _idCarreraSeleccionada = value!.id!;
-                          });
-                        }),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      decoration: _buildInputDecoration(
-                        'Año de estudio',
-                        Icons.date_range_outlined,
-                      ),
-                      value: _anioCarrera,
-                      items: ['1', '2', '3', '4', '5']
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text('$value° Año'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _anioCarrera = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 30),
+                            _buildSectionTitle('Información Académica'),
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<Carreras>(
+                              isExpanded: true,
+                              decoration: _buildInputDecoration('Carrera', Icons.school_outlined),
+                              value: _carreraSeleccionada,
+                              items: listaCarreras.map<DropdownMenuItem<Carreras>>((Carreras value) {
+                                return DropdownMenuItem<Carreras>(
+                                  value: value,
+                                  child: Text(
+                                    value.nombre_carrera!,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              }).toList(),
+                              validator: (value) {
+                                if (value == null) {
+                                  return "Por favor, selecciona una opción";
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  _idCarreraSeleccionada = value!.id!;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<String>(
+                              decoration: _buildInputDecoration(
+                                'Año de estudio',
+                                Icons.date_range_outlined,
+                              ),
+                              value: _anioCarrera,
+                              items: ['1', '2', '3', '4', '5'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text('$value° Año'),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _anioCarrera = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 30),
 
-                    // Botón de guardar cambios
-                    Container(
-                      width: double.infinity,
-                      height: 55,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF9C241C),
-                            Color(0xFFB62921),
+                            // Botón de guardar cambios
+                            Container(
+                              height: 55,
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF9C241C),
+                                    Color(0xFFB62921),
+                                  ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF9C241C).withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (_telefonoController!.text.isNotEmpty && 
+                                      _direccionController!.text.isNotEmpty) {
+                                    User_Info_Edit request = widget.userinfo;
+                                    request.anio_estudio = int.parse(_anioCarrera!);
+                                    request.telefono = _telefonoController!.text;
+                                    request.direccion = _direccionController!.text;
+                                    request.id_carrera = _idCarreraSeleccionada;
+                                    bool response = await api.editUserInfo(request, widget.user.token);
+                                    if (response) {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "¡Información editada con éxito!",
+                                            style: TextStyle(color: Colors.white),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          backgroundColor: Color.fromARGB(255, 31, 145, 35),
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    } else {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Error al editar la información",
+                                            style: TextStyle(color: Colors.white),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Guardar Cambios',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF9C241C).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () async{
-                          if(_telefonoController!.text.isNotEmpty && _direccionController!.text.isNotEmpty){
-                            User_Info_Edit request = widget.userinfo;
-                            request.anio_estudio = int.parse(_anioCarrera!);
-                            request.telefono = _telefonoController!.text;
-                            request.direccion = _direccionController!.text;
-                            request.id_carrera = _idCarreraSeleccionada;
-                            bool response = await api.editUserInfo(request, widget.user.token);
-                            if(response){
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Informacion editada con exito!", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
-                                backgroundColor: Color.fromARGB(255, 31, 145, 35),
-                                ),
-                              );
-                              Navigator.pop(context);
-                            }else{
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Error al editar la informacion", style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
-                                backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Guardar Cambios',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-      ),
     );
   }
+
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -357,6 +374,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ],
             ),

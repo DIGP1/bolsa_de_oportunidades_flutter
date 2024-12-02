@@ -100,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
 
-                          const SizedBox(width: 15),
+                          const SizedBox(width: 1.5),
 
                           //LOGO UES
                           Container(
