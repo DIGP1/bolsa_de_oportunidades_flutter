@@ -47,7 +47,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     });
     proyects = await api.getProyects(widget.user.token);
     aplicaciones = await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
-    print("Aplicaciones: ${_inProyect}");
+    print("Aplicaciones: $_inProyect");
     if (_inProyect) {
       Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
       proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
@@ -94,7 +94,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                                 });
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Color(0xFF9C241C)),
+                                backgroundColor: WidgetStateProperty.all(const Color(0xFF9C241C)),
                               ),
                               child: const Text(
                                 "Actualizar Proyectos",

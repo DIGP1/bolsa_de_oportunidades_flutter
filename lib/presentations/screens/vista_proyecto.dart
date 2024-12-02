@@ -8,8 +8,7 @@ class VistaProyecto extends StatefulWidget {
   final ProyectsModel proyectsModel;
   final User user;
   const VistaProyecto(
-      {Key? key, required this.proyectsModel, required this.user})
-      : super(key: key);
+      {super.key, required this.proyectsModel, required this.user});
 
   @override
   State<VistaProyecto> createState() => _VistaProyectoState();
@@ -184,10 +183,8 @@ class _VistaProyectoState extends State<VistaProyecto> {
                       _buildInfoRow(
                           Icons.access_time,
                           'Duración:',
-                          widget.proyectsModel.fecha_inicio +
-                              ' hasta ' +
-                              widget.proyectsModel
-                                  .fecha_fin), //Carga de fecha de inicio y fin del proyecto
+                          '${widget.proyectsModel.fecha_inicio} hasta ${widget.proyectsModel
+                                  .fecha_fin}'), //Carga de fecha de inicio y fin del proyecto
                       _buildInfoRow(
                         Icons.paste_rounded,
                         'Tipo de proyecto:',
@@ -470,7 +467,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

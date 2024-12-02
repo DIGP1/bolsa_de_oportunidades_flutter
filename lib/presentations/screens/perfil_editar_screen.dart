@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class EditProfileScreen extends StatefulWidget {
   final User user;
   final User_Info_Edit userinfo;
-  const EditProfileScreen({Key? key, required this.user, required this.userinfo}) : super(key: key);
+  const EditProfileScreen({super.key, required this.user, required this.userinfo});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();

@@ -36,14 +36,14 @@ class Api_Request {
       body: jsonEncode(request.toJson()),
     );
     var data = jsonDecode(response.body)['data'];
-    print("Datos del usuario: ${data}");
+    print("Datos del usuario: $data");
     if (response.statusCode == 200) {
       
 
       if(data is Map<String, dynamic>) {
-        var id_proyect = data['id_proyecto_asignado'];
-        id_proyect ??= 0;
-        data['user']['id_proyecto_asignado'] = id_proyect;
+        var idProyect = data['id_proyecto_asignado'];
+        idProyect ??= 0;
+        data['user']['id_proyecto_asignado'] = idProyect;
       }
       return User.fromJson(data);
     } else {
@@ -60,7 +60,7 @@ class Api_Request {
       throw Exception('Error en el login');
     }
   }
-    Future<User> loginUserOpened(String token, int id_estudianteS) async {
+    Future<User> loginUserOpened(String token, int idEstudiantes) async {
     final response = await http.get(
       Uri.parse('${baseUrl}me'),
       headers: {
@@ -71,7 +71,7 @@ class Api_Request {
       var data = jsonDecode(response.body);
       if(data is Map<String, dynamic>) {
         data['token'] = token;
-        data['estudiante_id'] = id_estudianteS;
+        data['estudiante_id'] = idEstudiantes;
         print("Datos del usuario: $data");
         if(data['user']['id_proyecto_asignado'] == null) {
           data['user']['id_proyecto_asignado'] = 0;
@@ -204,10 +204,10 @@ class Api_Request {
       return false;
     }
   }
-  Future<List<AplicacionModel>> getAplicacionStudent(String token, int id_estudiante) async {
+  Future<List<AplicacionModel>> getAplicacionStudent(String token, int idEstudiante) async {
     List<AplicacionModel> aplicaciones = [];
     final response = await http.get(
-      Uri.parse('${baseUrl}aplicaciones/estudiante/$id_estudiante'),
+      Uri.parse('${baseUrl}aplicaciones/estudiante/$idEstudiante'),
       headers: {
         'Authorization': 'Bearer $token',
       },

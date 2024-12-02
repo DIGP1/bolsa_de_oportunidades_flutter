@@ -22,7 +22,7 @@ class Carreras {
   @override
   String toString() {
     // TODO: implement toString
-    return this.nombre_carrera!;
+    return nombre_carrera!;
   }
 
 }

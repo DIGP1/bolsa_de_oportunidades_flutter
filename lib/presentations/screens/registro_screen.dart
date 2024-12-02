@@ -353,19 +353,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 onPressed: _acceptTerms
                                     ? () {
                                         if (_formKey.currentState!.validate()) {
-                                          String _correo1 = _correoController!
+                                          String correo1 = _correoController!
                                               .text
                                               .substring(0, 7)
                                               .toUpperCase();
-                                          String _correo2 = _correoController!
+                                          String correo2 = _correoController!
                                               .text
                                               .substring(7)
                                               .toLowerCase();
-                                          print(_correo1 + _correo2);
-                                          User_register user_register =
+                                          print(correo1 + correo2);
+                                          User_register userRegister =
                                               User_register(
-                                            email: _correo1 +
-                                                _correo2, //Se pasa el correo a minusculas para que no haya problemas en el inicio de sesión
+                                            email: correo1 +
+                                                correo2, //Se pasa el correo a minusculas para que no haya problemas en el inicio de sesión
                                             password: _passwordController!.text,
                                             confirmPassword:
                                                 _confirmPasswordController!
@@ -390,7 +390,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             idTipoUsuario: 3,
                                           );
                                           api
-                                              .registerUser(user_register)
+                                              .registerUser(userRegister)
                                               .then((value) {
                                             if (value) {
                                               ScaffoldMessenger.of(context)

@@ -18,8 +18,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-  bool _rememberMe = false;
-  Api_Request _apiRequest = Api_Request();
+  final bool _rememberMe = false;
+  final Api_Request _apiRequest = Api_Request();
   User_login? _user_login;
   TextEditingController? _emailController;
   TextEditingController? _passwordController;
@@ -184,14 +184,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              String _correo1 = _emailController!.text
+                              String correo1 = _emailController!.text
                                   .substring(0, 7)
                                   .toUpperCase();
-                              String _correo2 = _emailController!.text
+                              String correo2 = _emailController!.text
                                   .substring(7)
                                   .toLowerCase();
                               _user_login = User_login(
-                                  email: _correo1 + _correo2,
+                                  email: correo1 + correo2,
                                   password: _passwordController!.text);
                               _user = await _apiRequest.loginUser(
                                   _user_login!, context);

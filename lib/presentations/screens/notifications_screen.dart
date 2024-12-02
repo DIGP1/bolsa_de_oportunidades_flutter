@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   _NotificationsScreenState createState() => _NotificationsScreenState();
@@ -59,8 +59,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       // Botón flotante para limpiar las notificaciones
       floatingActionButton: FloatingActionButton(
         onPressed: _clearNotifications,
-        child: const Icon(Icons.delete),
         backgroundColor: const Color(0xFF9C241C),
+        child: const Icon(Icons.delete),
       ),
     );
   }
