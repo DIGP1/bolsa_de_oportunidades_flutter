@@ -46,8 +46,12 @@ class _VistaProyectoState extends State<VistaProyecto> {
   }
 
   Future<void> verificarAplicacion() async {
+    if (!mounted)
+      return; // Verificar si el widget está montado antes de continuar
+
     list_aplicaciones_estudiante = await api_request.getAplicacionStudent(
         widget.user.token, widget.user.id_user);
+
     bool existe = list_aplicaciones_estudiante.any((element) {
       if (element.idProyecto == widget.proyectsModel.id) {
         aplicacionExistente = element;
@@ -55,28 +59,36 @@ class _VistaProyectoState extends State<VistaProyecto> {
       }
       return false;
     });
-    print("Aplicacion existente: ${aplicacionExistente!.id}");
-    if (existe && aplicacionExistente != null) {
-      if (_in_Proyect) {
-        if (_in_this_Proyect) {
-          setState(() {
-            _color_button = Colors.green;
-            _text_button = "Ya estás en este proyecto";
-            _action_button = false;
-          });
+
+    // Usar el operador ?. para acceso seguro a la propiedad id
+    if (aplicacionExistente != null) {
+      print("Aplicacion existente: ${aplicacionExistente?.id}");
+    }
+
+    if (mounted) {
+      // Verificar nuevamente antes de setState
+      if (existe && aplicacionExistente != null) {
+        if (_in_Proyect) {
+          if (_in_this_Proyect) {
+            setState(() {
+              _color_button = Colors.green;
+              _text_button = "Ya estás en este proyecto";
+              _action_button = false;
+            });
+          } else {
+            setState(() {
+              _color_button = Colors.green;
+              _text_button = "Ya estas en un proyecto!";
+              _action_button = false;
+            });
+          }
         } else {
           setState(() {
             _color_button = Colors.green;
-            _text_button = "Ya estas en un proyecto!";
+            _text_button = "Aplicación enviada";
             _action_button = false;
           });
         }
-      } else {
-        setState(() {
-          _color_button = Colors.green;
-          _text_button = "Aplicación enviada";
-          _action_button = false;
-        });
       }
     }
   }
@@ -261,7 +273,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
                             );
                             _id_proyecto = await api_request.applyProyect(
                                 aplicacionModel, widget.user.token, context);
-                            if ( _id_proyecto != 0) {
+                            if (_id_proyecto != 0) {
                               setState(() {
                                 _color_button = Colors.red; // Cambiado a rojo
                                 _text_button =

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({super.key});
+  const NotificationsScreen({Key? key}) : super(key: key);
 
   @override
   _NotificationsScreenState createState() => _NotificationsScreenState();
@@ -36,16 +36,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0, // Quita la sombra
-        title: const Text(
-          'Notificaciones',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true, // Centra el título
+        title: const Text('Notificaciones'),
         backgroundColor: const Color(0xFF9C241C),
         elevation: 4,
       ),
@@ -72,7 +63,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                   title: Text(
                     notifications[index],
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   subtitle: Text(
                     'Recibido: ${DateTime.now().toLocal()}',
