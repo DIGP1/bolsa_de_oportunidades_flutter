@@ -177,44 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       // Recordar contraseña y Olvidé mi contraseña
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value!;
-                                    });
-                                  },
-                                  activeColor: const Color(0xFF9C241C),
-                                ),
-                                const Text('Recordarme'),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            child: TextButton(
-                              onPressed: () {
-                                // segun el archivo recuperation.dart has la logica para que mande a llamaar la vissta de recuperacion
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PasswordRecoveryScreen(),
-                                  ),
-                                );
-                              },
-                              child: const Text('¿Olvidaste tu contraseña?',
-                                  style: TextStyle(color: Color(0xFF9C241C))),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
+                     
                       SizedBox(
                         width: double.infinity,
                         height: 55,

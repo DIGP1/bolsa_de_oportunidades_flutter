@@ -16,26 +16,45 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  PageController _pageController = PageController();
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //Para usar el usuario que inicio sesion tienen que poner widget.user
     return Scaffold(
       backgroundColor: Colors.white,
-      body: IndexedStack(
-        index: _selectedIndex,
-        //Lista donde se llaman las pantallas de buttonNavigationBar
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         children: [
           HomeContent(user: widget.user),
-          SavedJobsScreen(
-            user: widget.user,
-          ),
+          SavedJobsScreen(user: widget.user),
           ProfileScreen(user: widget.user),
         ],
       ),
@@ -63,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
 
 class HomeContent extends StatefulWidget {
   final User user;
@@ -393,6 +413,9 @@ class _HomeContentState extends State<HomeContent> {
                               _buildTag(proyect.tipo_proyecto),
                               const SizedBox(width: 8),
                               _buildTag(proyect.modalidad),
+                              const SizedBox(width: 8),
+                              
+                              _buildTag(proyect.estado_oferta),
                             ],
                           ),
                         ],
@@ -409,19 +432,37 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildTag(String tag) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF9C241C).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        tag,
-        style: const TextStyle(
-          color: Color(0xFF9C241C),
-          fontSize: 12,
+    if(tag == 'Activo'){
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4CAF50).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-      ),
-    );
+        child: Text(
+          tag,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 54, 172, 58),
+            fontSize: 12,
+          ),
+        ),
+      );
+    }else{
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF9C241C).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          tag,
+          style: const TextStyle(
+            color: Color(0xFF9C241C),
+            fontSize: 12,
+          ),
+        ),
+      );
+    }
+    
   }
 }

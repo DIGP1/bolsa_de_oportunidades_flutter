@@ -35,9 +35,17 @@ class Api_Request {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(request.toJson()),
     );
-
+    var data = jsonDecode(response.body)['data'];
+    print("Datos del usuario: ${data}");
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body)['data']);
+      
+
+      if(data is Map<String, dynamic>) {
+        var id_proyect = data['id_proyecto_asignado'];
+        id_proyect ??= 0;
+        data['user']['id_proyecto_asignado'] = id_proyect;
+      }
+      return User.fromJson(data);
     } else {
       if(response.statusCode == 401) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -64,7 +72,12 @@ class Api_Request {
       if(data is Map<String, dynamic>) {
         data['token'] = token;
         data['estudiante_id'] = id_estudianteS;
+        print("Datos del usuario: $data");
+        if(data['user']['id_proyecto_asignado'] == null) {
+          data['user']['id_proyecto_asignado'] = 0;
+        }
       }
+      print("Datos del usuario: $data");
       return User.fromJson(data);
 
     } else {
@@ -172,12 +185,19 @@ class Api_Request {
     );
     if (response.statusCode == 201) {
       return true;
-    } else {
-      print('Error al aplicar al proyecto: ${response.statusCode}');
-      print('Cuerpo de la respuesta: ${response.body}');
+    } else if (response.statusCode == 400) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al aplicar al proyecto codigo: ${response.statusCode} cuerpo: ${response.body}', style: const TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+       const SnackBar(
+          content: Text('Este proyecto se ha quedado sin cupos!', style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al aplicar al proyecto', style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
           backgroundColor: Colors.red,
         ),
       );
@@ -234,4 +254,6 @@ class Api_Request {
       return 0;
     }
   }
+
+
 }

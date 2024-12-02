@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 class VistaProyecto extends StatefulWidget {
   final ProyectsModel proyectsModel;
   final User user;
-  const VistaProyecto({Key? key, required this.proyectsModel, required this.user}) : super(key: key);
+  const VistaProyecto(
+      {Key? key, required this.proyectsModel, required this.user})
+      : super(key: key);
 
   @override
   State<VistaProyecto> createState() => _VistaProyectoState();
@@ -20,37 +22,64 @@ class _VistaProyectoState extends State<VistaProyecto> {
   bool _action_button = true;
   List<AplicacionModel> list_aplicaciones_estudiante = [];
   AplicacionModel? aplicacionExistente;
-
+  bool _in_Proyect = false;
+  bool _in_this_Proyect = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _in_Proyect = widget.user.id_proyecto != 0;
+    _in_this_Proyect = widget.user.id_proyecto == widget.proyectsModel.id;
+    if(_in_Proyect){
+      setState(() {
+        _text_button = "Ya estás en un proyecto!";
+        _action_button = false;
+      });
+    }
     verificarAplicacion();
   }
+
   @override
   void dispose() {
-   super.dispose();
+    super.dispose();
   }
-  
 
   Future<void> verificarAplicacion() async {
-    list_aplicaciones_estudiante = await api_request.getAplicacionStudent(widget.user.token, widget.user.id_user);
+    list_aplicaciones_estudiante = await api_request.getAplicacionStudent(
+        widget.user.token, widget.user.id_user);
     bool existe = list_aplicaciones_estudiante.any((element) {
       if (element.idProyecto == widget.proyectsModel.id) {
-      aplicacionExistente = element;
-      return true;
+        aplicacionExistente = element;
+        return true;
       }
       return false;
     });
     if (existe && aplicacionExistente != null) {
-      setState(() {
-      _color_button = Colors.green;
-      _text_button = "Aplicación enviada";
-      _action_button = false;
-      });
+      if (_in_Proyect) {
+        if (_in_this_Proyect) {
+          setState(() {
+            _color_button = Colors.green;
+            _text_button = "Ya estás en este proyecto";
+            _action_button = false;
+          });
+        } else {
+          setState(() {
+            _color_button = Colors.green;
+            _text_button = "Ya estas en un proyecto!";
+            _action_button = false;
+          });
+        }
+      } else {
+        setState(() {
+          _color_button = Colors.green;
+          _text_button = "Aplicación enviada";
+          _action_button = false;
+        });
+      }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +94,10 @@ class _VistaProyectoState extends State<VistaProyecto> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 widget.proyectsModel.titulo, //Carga de titulo del proyecto
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
               background: Container(
                 decoration: BoxDecoration(
@@ -112,7 +144,10 @@ class _VistaProyectoState extends State<VistaProyecto> {
               ),
             ),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white,),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
             actions: [
@@ -136,28 +171,42 @@ class _VistaProyectoState extends State<VistaProyecto> {
                     title: 'Información del Proyecto',
                     children: [
                       _buildInfoRow(
-                          Icons.business, 'Empresa:', widget.proyectsModel.nombre_empresa), //Carga de empresa del proyecto
+                          Icons.business,
+                          'Empresa:',
+                          widget.proyectsModel
+                              .nombre_empresa), //Carga de empresa del proyecto
                       _buildInfoRow(
                         Icons.location_on,
                         'Ubicación:',
-                        widget.proyectsModel.ubicacion, //Carga de ubicacion del proyecto
+                        widget.proyectsModel
+                            .ubicacion, //Carga de ubicacion del proyecto
                       ),
-                      _buildInfoRow(Icons.access_time, 'Duración:', widget.proyectsModel.fecha_inicio + ' hasta ' + widget.proyectsModel.fecha_fin), //Carga de fecha de inicio y fin del proyecto
+                      _buildInfoRow(
+                          Icons.access_time,
+                          'Duración:',
+                          widget.proyectsModel.fecha_inicio +
+                              ' hasta ' +
+                              widget.proyectsModel
+                                  .fecha_fin), //Carga de fecha de inicio y fin del proyecto
                       _buildInfoRow(
                         Icons.paste_rounded,
                         'Tipo de proyecto:',
-                        widget.proyectsModel.tipo_proyecto, //Carga de modalidad del proyecto
+                        widget.proyectsModel
+                            .tipo_proyecto, //Carga de modalidad del proyecto
                       ),
                       _buildInfoRow(
                         Icons.work,
                         'Modalidad:',
-                        widget.proyectsModel.modalidad, //Carga de modalidad del proyecto
+                        widget.proyectsModel
+                            .modalidad, //Carga de modalidad del proyecto
                       ),
                       ...[
-                        if(widget.proyectsModel.cupos_disponibles == 1) 
-                          _buildInfoRow(Icons.group, 'Cupos:', '${widget.proyectsModel.cupos_disponibles} disponible')
-                        else 
-                          _buildInfoRow(Icons.group, 'Cupos:', '${widget.proyectsModel.cupos_disponibles} disponibles')
+                        if (widget.proyectsModel.cupos_disponibles == 1)
+                          _buildInfoRow(Icons.group, 'Cupos:',
+                              '${widget.proyectsModel.cupos_disponibles} disponible')
+                        else
+                          _buildInfoRow(Icons.group, 'Cupos:',
+                              '${widget.proyectsModel.cupos_disponibles} disponibles')
                       ]
                     ],
                   ),
@@ -177,7 +226,6 @@ class _VistaProyectoState extends State<VistaProyecto> {
                   // Requisitos
                   _buildRequirementsSection(),
 
-
                   const SizedBox(height: 32),
 
                   // Botón de aplicar
@@ -185,86 +233,103 @@ class _VistaProyectoState extends State<VistaProyecto> {
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () async{
-                        if(_action_button){
-                          AplicacionModel aplicacionModel = AplicacionModel(
-                            id: 0,
-                            idEstudiante: widget.user.id_user,
-                            idProyecto: widget.proyectsModel.id,
-                            idEstadoAplicacion: 1,
-                            comentariosEmpresa: '',
+                      onPressed: () async {
+                        if (_in_Proyect) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Ya estás en un proyecto!'),
+                              backgroundColor: Colors.red,
+                            ),
                           );
-                          if(await api_request.applyProyect(aplicacionModel, widget.user.token, context)){
-                            setState(() {
-                              _color_button = Colors.green;
-                              _text_button = "Aplicación enviada";
-                              _action_button = false;
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Aplicación enviada correctamente'),
-                                backgroundColor: Colors.green,
-                              ),
+                        } else {
+                          if (_action_button) {
+                            AplicacionModel aplicacionModel = AplicacionModel(
+                              id: 0,
+                              idEstudiante: widget.user.id_user,
+                              idProyecto: widget.proyectsModel.id,
+                              idEstadoAplicacion: 1,
+                              comentariosEmpresa: '',
                             );
-
+                            if (await api_request.applyProyect(
+                                aplicacionModel, widget.user.token, context)) {
+                              setState(() {
+                                _color_button = Colors.green;
+                                _text_button = "Aplicación enviada";
+                                _action_button = false;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Aplicación enviada correctamente'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Error al enviar la aplicación'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Error al enviar la aplicación'),
-                                backgroundColor: Colors.red,
-                              ),
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Eliminar Aplicación'),
+                                  content: const Text(
+                                      'Ya has aplicado a este proyecto. ¿Realmente deseas eliminar tu aplicación?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('No'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        bool flag =
+                                            await api_request.deleteAplicacion(
+                                                aplicacionExistente!.id,
+                                                widget.user.token);
+                                        setState(() {
+                                          if (flag) {
+                                            _action_button = true;
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    'Aplicación eliminada correctamente'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    'Error al eliminar la aplicación'),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                          _color_button =
+                                              const Color(0xFF9C241C);
+                                          _text_button = "Aplicar ahora";
+                                          _action_button = true;
+                                          Navigator.of(context).pop();
+                                        });
+                                      },
+                                      child: const Text('Sí'),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           }
-                        }else{
-                            showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                              title: const Text('Eliminar Aplicación'),
-                              content: const Text('Ya has aplicado a este proyecto. ¿Realmente deseas eliminar tu aplicación?'),
-                              actions: [
-                                TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  
-                                },
-                                child: const Text('No'),
-                                ),
-                                TextButton(
-                                onPressed: () async{
-                                  bool flag = await api_request.deleteAplicacion(aplicacionExistente!.id, widget.user.token);
-                                    setState(() {
-                                      if(flag){
-                                        _action_button = true;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Aplicación eliminada correctamente'),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );}
-                                      else{
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Error al eliminar la aplicación'),
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      }
-                                      _color_button = const Color(0xFF9C241C);
-                                      _text_button = "Aplicar ahora";
-                                      _action_button = true;
-                                      Navigator.of(context).pop();
-                                    });
-                                    
-                                },
-                                child: const Text('Sí'),
-                                ),
-                              ],
-                              );
-                            },
-                            );
                         }
-                        
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _color_button,
@@ -365,7 +430,8 @@ class _VistaProyectoState extends State<VistaProyecto> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                widget.proyectsModel.estado_oferta, //Carga de estado del proyecto
+                widget
+                    .proyectsModel.estado_oferta, //Carga de estado del proyecto
                 style: const TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
@@ -376,17 +442,20 @@ class _VistaProyectoState extends State<VistaProyecto> {
             _buildInfoRow(
               Icons.calendar_today,
               'Inicio:',
-              widget.proyectsModel.fecha_inicio, //Carga de fecha de inicio del proyecto
+              widget.proyectsModel
+                  .fecha_inicio, //Carga de fecha de inicio del proyecto
             ),
             _buildInfoRow(
               Icons.event,
               'Finalización:',
-              widget.proyectsModel.fecha_fin, //Carga de fecha de fin del proyecto
+              widget
+                  .proyectsModel.fecha_fin, //Carga de fecha de fin del proyecto
             ),
             _buildInfoRow(
               Icons.timer,
               'Límite para aplicar:',
-              widget.proyectsModel.fecha_limite, //Carga de fecha límite para aplicar al proyecto
+              widget.proyectsModel
+                  .fecha_limite, //Carga de fecha límite para aplicar al proyecto
             ),
           ],
         ),
@@ -414,7 +483,8 @@ class _VistaProyectoState extends State<VistaProyecto> {
             ),
             const SizedBox(height: 16),
             Text(
-              widget.proyectsModel.descripcion, //Carga de descripción del proyecto
+              widget.proyectsModel
+                  .descripcion, //Carga de descripción del proyecto
               style: const TextStyle(
                 height: 1.5,
               ),
@@ -444,7 +514,8 @@ class _VistaProyectoState extends State<VistaProyecto> {
               ),
             ),
             const SizedBox(height: 16),
-            for (var req in widget.proyectsModel.requisitos) _buildRequirementItem(req),
+            for (var req in widget.proyectsModel.requisitos)
+              _buildRequirementItem(req),
           ],
         ),
       ),

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class SavedJobsScreen extends StatefulWidget {
   final User user;
-  const SavedJobsScreen({Key? key, required this.user}) : super(key: key);
+  const SavedJobsScreen({super.key, required this.user});
 
   @override
   State<SavedJobsScreen> createState() => _SavedJobsScreenState();
@@ -19,11 +19,15 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   List<AplicacionModel> aplicaciones = [];
   bool _isLoading = true;
   bool _isEmpy = true;
+  bool _inProyect = false;
+  User? user;
 
   @override
   void initState() {
     super.initState();
-    _loadProyects_Aplicaciones();
+    _checkStateProyects();
+    
+
   }
 
   @override
@@ -34,23 +38,32 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadProyects_Aplicaciones();
+    _checkStateProyects();
   }
 
-  Future<void> _loadProyects_Aplicaciones() async {
+   Future<void> _loadProyectsAplicaciones() async {
     setState(() {
       _isLoading = true;
     });
     proyects = await api.getProyects(widget.user.token);
     aplicaciones = await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
-
-    Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
-    proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
+    print("Aplicaciones: ${_inProyect}");
+    if (_inProyect) {
+      Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
+      proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
+      
+    } else {
+      proyects = proyects.where((p) => p.id == user!.id_proyecto).toList();
+    }
     _isEmpy = proyects.isEmpty;
-    //proyects = proyects.reversed.toList();
     setState(() {
       _isLoading = false;
     });
+  }
+  Future<void> _checkStateProyects() async{
+    user = await Api_Request().loginUserOpened(widget.user.token, widget.user.id_user);
+    _inProyect = user!.id_proyecto == 0;
+    _loadProyectsAplicaciones();
   }
 
   @override
@@ -77,23 +90,42 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                               onPressed: () {
                                 setState(() {
                                   _isLoading = true;
-                                  _loadProyects_Aplicaciones();
+                                  _checkStateProyects();
                                 });
                               },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(Color(0xFF9C241C)),
+                              ),
                               child: const Text(
                                 "Actualizar Proyectos",
                                 style: TextStyle(color: Colors.white),
                               ),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Color(0xFF9C241C)),
-                              ),
                             )
                           ],
                         )
-                      : RefreshIndicator(
-                          onRefresh: _loadProyects_Aplicaciones,
-                          child: _buildRecentJobs(),
-                        ),
+                      : _inProyect
+                          ? RefreshIndicator(
+                              onRefresh: _loadProyectsAplicaciones,
+                              child: _buildRecentJobs(),
+                            )
+                          : Column(
+                              children: [
+                                const Text(
+                                  'Proyecto en el que estás aplicado',
+                                  style: TextStyle(
+                                    color: Color(0xFF9C241C),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: RefreshIndicator(
+                                    onRefresh: _loadProyectsAplicaciones,
+                                    child: _buildRecentJobs(),
+                                  ),
+                                ),
+                              ],
+                            ),
             ),
           ],
         ),
@@ -145,13 +177,13 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
           onTap: () async {
             var response = await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => VistaProyecto(proyectsModel: proyect, user: widget.user),
+                builder: (context) => VistaProyecto(proyectsModel: proyect, user: user!),
               ),
             );
             if (response == null) {
               setState(() {
                 _isLoading = true;
-                _loadProyects_Aplicaciones();
+                _checkStateProyects();
               });
             }
           },
