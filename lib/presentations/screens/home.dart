@@ -1,34 +1,61 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/proyects_model.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/guardados_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/notifications_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
+  final User user;
+  const HomeScreen({Key? key, required this.user}) : super(key: key);
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  PageController _pageController = PageController();
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: const [
-          HomeContent(),
-          SavedJobsScreen(),
-          ProfileScreen(),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        children: [
+          HomeContent(user: widget.user),
+          SavedJobsScreen(user: widget.user),
+          ProfileScreen(user: widget.user),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -43,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
-            label: 'Guardados',
+            icon: Icon(Icons.check_circle),
+            label: 'Aplicados',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -56,8 +83,62 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HomeContent extends StatelessWidget {
-  const HomeContent({super.key});
+
+class HomeContent extends StatefulWidget {
+  final User user;
+  const HomeContent({Key? key, required this.user}) : super(key: key);
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  Api_Request api = Api_Request();
+  List<ProyectsModel> proyects = [];
+  bool _isLoading = true;
+  TextEditingController? _searchController;
+  List<ProyectsModel> originalProyects = [];
+
+  Future<void> _loadProyects() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      List<ProyectsModel> list_proyects =
+          await api.getProyects(widget.user.token);
+      list_proyects = list_proyects.reversed.toList();
+
+      setState(() {
+        proyects = list_proyects;
+        originalProyects = list_proyects;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al cargar los proyectos: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al cargar los proyectos'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    _loadProyects();
+  }
+
+  @override
+  void dispose() {
+    _searchController!.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +147,20 @@ class HomeContent extends StatelessWidget {
         children: [
           _buildHeader(),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildCategories(context),
-                  _buildRecentJobs(),
-                ],
-              ),
-            ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : RefreshIndicator(
+                    onRefresh: _loadProyects,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          //_buildCategories(context),
+                          _buildRecentJobs(),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -117,7 +204,7 @@ class HomeContent extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Encuentra tu trabajo ideal',
+                        'Encuentra tu oportunidad ideal',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 18,
@@ -128,10 +215,11 @@ class HomeContent extends StatelessWidget {
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.notifications_outlined,
-                    color: Colors.white),
+                icon: const Icon(Icons.notifications_outlined, color: Colors.white),
                 onPressed: () {
-                  // Manejar notificaciones
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                  );
                 },
               ),
             ],
@@ -149,6 +237,7 @@ class HomeContent extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Buscar propuesta...',
                       hintStyle: TextStyle(
@@ -163,7 +252,17 @@ class HomeContent extends StatelessWidget {
                       color: Colors.black87,
                     ),
                     onChanged: (value) {
-                      // Aquí puedes manejar los cambios en el texto
+                      setState(() {
+                        if (value.isEmpty) {
+                          proyects = originalProyects;
+                        } else {
+                          proyects = originalProyects.where((proyect) {
+                            return proyect.titulo
+                                .toLowerCase()
+                                .contains(value.toLowerCase());
+                          }).toList();
+                        }
+                      });
                     },
                   ),
                 ),
@@ -181,110 +280,44 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(BuildContext context) {
-    final categories = [
-      {'icon': Icons.computer, 'name': 'Tecnología'},
-      {'icon': Icons.brush, 'name': 'Diseño'},
-      {'icon': Icons.business, 'name': 'Negocios'},
-      {'icon': Icons.school, 'name': 'Educación'},
-    ];
-
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.12,
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Center(
-        child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * 0.05,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            return Container(
-              width: MediaQuery.of(context).size.width * 0.18,
-              margin: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.015,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    categories[index]['icon'] as IconData,
-                    color: const Color(0xFF9C241C),
-                    size: MediaQuery.of(context).size.width * 0.06,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    categories[index]['name'] as String,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.025,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
   Widget _buildRecentJobs() {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Trabajos Recientes',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Ver todos',
-                  style: TextStyle(
-                    color: Color(0xFF9C241C),
-                  ),
-                ),
-              ),
+              )
             ],
           ),
         ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 5,
+          itemCount: proyects.length,
           itemBuilder: (context, index) {
+            ProyectsModel proyect = proyects[index];
             return GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
+              onTap: () async {
+                var response = await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const VistaProyecto(),
+                    builder: (context) => VistaProyecto(
+                        proyectsModel: proyect, user: widget.user),
                   ),
                 );
+                if (response == null) {
+                  setState(() {
+                    _isLoading = true;
+                    _loadProyects();
+                  });
+                }
               },
               child: Container(
                 margin:
@@ -311,36 +344,38 @@ class HomeContent extends StatelessWidget {
                         color: const Color(0xFF9C241C).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
-                        Icons.work,
-                        color: Color(0xFF9C241C),
-                      ),
+                      child: proyect.tipo_proyecto == 'Servicio Social'
+                          ? const Icon(Icons.query_builder_sharp,
+                              color: Color(0xFF9C241C))
+                          : proyect.tipo_proyecto == 'Pasantía'
+                              ? const Icon(Icons.work, color: Color(0xFF9C241C))
+                              : const SizedBox(),
                     ),
                     const SizedBox(width: 15),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Desarrollador Flutter Senior',
-                            style: TextStyle(
+                          Text(
+                            proyect.titulo,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Row(
+                          Row(
                             children: [
-                              Icon(
-                                Icons.location_on,
+                              const Icon(
+                                Icons.business_outlined,
                                 size: 16,
                                 color: Color(0xFF9C241C),
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Flexible(
                                 child: Text(
-                                  'TechCorp • Ciudad de Guatemala',
-                                  style: TextStyle(
+                                  proyect.nombre_empresa,
+                                  style: const TextStyle(
                                     color: Color.fromARGB(255, 155, 151, 151),
                                     fontSize: 14,
                                   ),
@@ -353,17 +388,38 @@ class HomeContent extends StatelessWidget {
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              _buildTag('Tiempo completo'),
+                              const Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: Color(0xFF9C241C),
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  proyect.ubicacion,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 155, 151, 151),
+                                    fontSize: 14,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              _buildTag(proyect.tipo_proyecto),
                               const SizedBox(width: 8),
-                              _buildTag('Remoto'),
+                              _buildTag(proyect.modalidad),
+                              const SizedBox(width: 8),
+                              
+                              _buildTag(proyect.estado_oferta),
                             ],
                           ),
                         ],
                       ),
-                    ),
-                    const Icon(
-                      Icons.bookmark_border,
-                      color: Color(0xFF9C241C),
                     ),
                   ],
                 ),
@@ -376,19 +432,37 @@ class HomeContent extends StatelessWidget {
   }
 
   Widget _buildTag(String tag) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF9C241C).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        tag,
-        style: const TextStyle(
-          color: Color(0xFF9C241C),
-          fontSize: 12,
+    if(tag == 'Activo'){
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4CAF50).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-      ),
-    );
+        child: Text(
+          tag,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 54, 172, 58),
+            fontSize: 12,
+          ),
+        ),
+      );
+    }else{
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF9C241C).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          tag,
+          style: const TextStyle(
+            color: Color(0xFF9C241C),
+            fontSize: 12,
+          ),
+        ),
+      );
+    }
+    
   }
 }

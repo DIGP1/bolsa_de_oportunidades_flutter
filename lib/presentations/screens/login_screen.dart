@@ -1,7 +1,12 @@
 // lib/presentations/screens/login_screen.dart
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_login.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/recuperation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +19,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+  Api_Request _apiRequest = Api_Request();
+  User_login? _user_login;
+  TextEditingController? _emailController;
+  TextEditingController? _passwordController;
+  User? _user;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _emailController!.dispose();
+    _passwordController!.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +56,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Logo o imagen de la app
                 Center(
                   child: Container(
-                    height: 150,
-                    width: 200,
+                    height: 175,
+                    width: 275,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1), //color de fondo
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Image.asset('assets/ues.jpeg' // Ruta de imagen
+                    child: Image.asset('assets/logo.png' // Ruta de imagen
                         ),
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 3),
                 const Center(
                   child: Text(
                     '¡Bienvenido!',
@@ -53,12 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 3),
-                Text(
-                  'Inicia sesión para encontrar tu oportunidad ideal',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
+                Center(
+                  child: Text(
+                    'Inicia sesión para encontrar tu oportunidad ideal',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -69,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       // Campo de correo
                       TextFormField(
+                        controller: _emailController,
                         decoration: InputDecoration(
                           labelText: 'Correo electrónico',
                           labelStyle: TextStyle(color: Colors.grey[600]!),
@@ -102,6 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 20),
                       // Campo de contraseña
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
@@ -115,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               setState(() {
                                 _isPasswordVisible = !_isPasswordVisible;
                               });
@@ -147,50 +177,69 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       // Recordar contraseña y Olvidé mi contraseña
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _rememberMe = value!;
-                                    });
-                                  },
-                                  activeColor: const Color(0xFF9C241C),
-                                ),
-                                const Text('Recordarme'),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            child: TextButton(
-                              onPressed: () {
-                                // Implementar recuperación de contraseña
-                              },
-                              child: const Text('¿Olvidaste tu contraseña?',
-                                  style: TextStyle(color: Color(0xFF9C241C))),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
+                     
                       SizedBox(
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              // Implementar lógica de inicio de sesión
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HomeScreen(),
-                                ),
-                              );
+                              String _correo1 = _emailController!.text
+                                  .substring(0, 7)
+                                  .toUpperCase();
+                              String _correo2 = _emailController!.text
+                                  .substring(7)
+                                  .toLowerCase();
+                              _user_login = User_login(
+                                  email: _correo1 + _correo2,
+                                  password: _passwordController!.text);
+                              _user = await _apiRequest.loginUser(
+                                  _user_login!, context);
+                              if (_user != null) {
+                                if (_user!.id_tipo_user == 3) {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  final prefs2 =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setString(
+                                      'user_token', _user!.token);
+                                      await prefs2.setInt('user_id', _user!.id_user);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Inicio de sesión exitoso",
+                                        style: TextStyle(color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                        textScaler: TextScaler.linear(1.5),
+                                      ),
+                                      backgroundColor:
+                                          Color.fromARGB(255, 31, 145, 35),
+                                    ),
+                                  );
+                                  await Future.delayed(
+                                      const Duration(seconds: 2));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomeScreen(user: _user!),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Usuario no autorizado",
+                                        style: TextStyle(color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                        textScaler: TextScaler.linear(1.5),
+                                      ),
+                                      backgroundColor:
+                                          Color.fromARGB(255, 145, 31, 31),
+                                    ),
+                                  );
+                                }
+                              }
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -219,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
-                              'O continúa con',
+                              '',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ),

@@ -1,15 +1,40 @@
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/home.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/login_screen.dart';
 import 'package:bolsa_de_oportunidades_flutter/presentations/screens/vista_proyecto.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_messaging.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //messaging
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotifications(); 
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Future<Widget> _getInitialScreen() async {
+
+    final prefs = await SharedPreferences.getInstance();
+    final prefs2 = await SharedPreferences.getInstance();
+    final token = prefs.getString('user_token');
+    final id_estudiante = prefs2.getInt('user_id');
+    
+    if (token != null && token.isNotEmpty && id_estudiante != null) {
+      User user = await Api_Request().loginUserOpened(token, id_estudiante);
+      print("token: ${user.token}, id: ${user.id_user}");
+      return HomeScreen(user: user); // Ajusta según tu modelo
+    } else {
+      // Si no hay token, mostrar LoginScreen
+      return const LoginScreen();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,23 +45,26 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFF9C241C),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const LoginScreen(), 
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/vista_proyecto':
-            return MaterialPageRoute(
-              builder: (context) => const VistaProyecto(),
+      home: FutureBuilder<Widget>(
+        future: _getInitialScreen(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
             );
-          case '/home':
-            return MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
+          }
+          if (snapshot.hasError) {
+            return const Scaffold(
+              body: Center(
+                child: Text("Error al cargar la app"),
+              ),
             );
-          default:
-            return MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            );
-        }
-      },
+          }
+          return snapshot.data ?? const LoginScreen();
+        },
+      ),
     );
   }
 }

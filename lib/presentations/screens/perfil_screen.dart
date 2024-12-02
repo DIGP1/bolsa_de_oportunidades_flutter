@@ -1,18 +1,61 @@
-import 'package:flutter/material.dart';
+import 'dart:ffi';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+import 'package:bolsa_de_oportunidades_flutter/presentations/api_request/api_request.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/models/user_info_edit.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/login_screen.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/perfil_editar_screen.dart';
+import 'package:bolsa_de_oportunidades_flutter/presentations/screens/registro_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ProfileScreen extends StatefulWidget {
+  final User user;
+  const ProfileScreen({Key? key, required this.user}) : super(key: key);
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Api_Request api = Api_Request();
+  User_Info_Edit? userInfo;
+  bool _isLoading = true;
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getInfoUser();
+  }
+
+   Future<void> _getInfoUser() async {
+    try {
+      print("Tratando de cargar la información del usuario");
+      User_Info_Edit infoUser = await api.getUserInfo(widget.user.token);
+      setState(() {
+        userInfo = infoUser;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al cargar las carreras: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body:  _isLoading ? const Center(child: CircularProgressIndicator()) : SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(widget.user),
             Expanded(
-              child: _buildProfileContent(),
+              child: _buildProfileContent(context, api, widget, userInfo!),
             ),
           ],
         ),
@@ -20,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-Widget _buildHeader() {
+Widget _buildHeader(User user) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -65,9 +108,9 @@ Widget _buildHeader() {
         ),
         const SizedBox(height: 3),
         
-        const Text(
-          'Nombre del Usuario',
-          style: TextStyle(
+        Text(
+          "${userInfo?.nombres} ${userInfo?.apellidos}",
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20, 
             fontWeight: FontWeight.bold,
@@ -99,7 +142,7 @@ Widget _buildHeader() {
               ),
               const SizedBox(width: 3),
               Text(
-                'usuario@email.com',
+                '${userInfo?.email}',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.9),
                   fontSize: 14,
@@ -117,22 +160,16 @@ Widget _buildHeader() {
 }
 }
 
-  Widget _buildProfileContent() {
+  Widget _buildProfileContent(BuildContext context, Api_Request api, dynamic widget, User_Info_Edit userInfo) {
     return ListView(
       padding: const EdgeInsets.all(10),
       children: [
         _buildSection('Información Personal', [
-          _buildListTile(Icons.person_outline, 'Editar Perfil'),
-        ]),
-        const SizedBox(height: 15),
-        _buildSection('Configuración', [
-          _buildListTile(Icons.notifications_outlined, 'Notificaciones'),
-          _buildListTile(Icons.lock_outline, 'Privacidad'),
-          _buildListTile(Icons.help_outline, 'Ayuda'),
+          _buildListTile(context,api,widget,userInfo,Icons.person_outline, 'Editar Perfil'),
         ]),
         const SizedBox(height: 15),
         _buildSection('Cuenta', [
-          _buildListTile(Icons.logout, 'Cerrar Sesión', color: Colors.red),
+          _buildListTile(context,api,widget,userInfo,Icons.logout, 'Cerrar Sesión', color: Colors.red),
         ]),
       ],
     );
@@ -161,7 +198,7 @@ Widget _buildHeader() {
     );
   }
 
-  Widget _buildListTile(IconData icon, String title, {Color? color}) {
+  Widget _buildListTile(BuildContext context, Api_Request api,dynamic widget,User_Info_Edit userInfo, IconData icon, String title, {Color? color}) {
     return ListTile(
       leading: Icon(icon, color: color ?? const Color(0xFF9C241C)),
       title: Text(
@@ -172,8 +209,25 @@ Widget _buildHeader() {
         ),
       ),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () {
-        // Manejar la navegación o la acción
+      onTap: () async{
+        if (title == 'Cerrar Sesión') {
+          if(await api.logout(widget.user.token)){
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('user_token');
+            Navigator.pushReplacement(context,
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ),
+            );
+          }
+        }else{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+            builder: (context) => EditProfileScreen(user: widget.user, userinfo: userInfo)));
+        }
+
       },
     );
   }
+
