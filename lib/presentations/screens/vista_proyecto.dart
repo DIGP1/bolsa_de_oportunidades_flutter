@@ -31,6 +31,12 @@ class _VistaProyectoState extends State<VistaProyecto> {
     super.initState();
     _in_Proyect = widget.user.id_proyecto != 0;
     _in_this_Proyect = widget.user.id_proyecto == widget.proyectsModel.id;
+    if(_in_Proyect){
+      setState(() {
+        _text_button = "Ya estás en un proyecto!";
+        _action_button = false;
+      });
+    }
     verificarAplicacion();
   }
 

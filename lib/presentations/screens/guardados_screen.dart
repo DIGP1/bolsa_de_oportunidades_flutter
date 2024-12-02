@@ -26,7 +26,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   void initState() {
     super.initState();
     _checkStateProyects();
-    _loadProyectsAplicaciones();
+    
 
   }
 
@@ -39,7 +39,6 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _checkStateProyects();
-    _loadProyectsAplicaciones();
   }
 
    Future<void> _loadProyectsAplicaciones() async {
@@ -48,13 +47,13 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     });
     proyects = await api.getProyects(widget.user.token);
     aplicaciones = await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
-
+    print("Aplicaciones: ${_inProyect}");
     if (_inProyect) {
       Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
       proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
       
     } else {
-      proyects = proyects.where((p) => p.id == widget.user.id_proyecto).toList();
+      proyects = proyects.where((p) => p.id == user!.id_proyecto).toList();
     }
     _isEmpy = proyects.isEmpty;
     setState(() {
@@ -63,9 +62,8 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   }
   Future<void> _checkStateProyects() async{
     user = await Api_Request().loginUserOpened(widget.user.token, widget.user.id_user);
-    setState(() {
-      _inProyect = user!.id_proyecto == 0;
-    });
+    _inProyect = user!.id_proyecto == 0;
+    _loadProyectsAplicaciones();
   }
 
   @override
@@ -92,7 +90,7 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                               onPressed: () {
                                 setState(() {
                                   _isLoading = true;
-                                  _loadProyectsAplicaciones();
+                                  _checkStateProyects();
                                 });
                               },
                               style: ButtonStyle(
@@ -186,7 +184,6 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
               setState(() {
                 _isLoading = true;
                 _checkStateProyects();
-                _loadProyectsAplicaciones();
               });
             }
           },
