@@ -174,7 +174,7 @@ class Api_Request {
     }
   }
 
-  Future<bool> applyProyect(AplicacionModel aplicacion, String token, BuildContext context) async {
+  Future<int> applyProyect(AplicacionModel aplicacion, String token, BuildContext context) async {
     final response = await http.post(
       Uri.parse('${baseUrl}aplicaciones'),
       headers: {
@@ -184,15 +184,16 @@ class Api_Request {
       body: jsonEncode(aplicacion.toJson()),
     );
     if (response.statusCode == 201) {
-      return true;
+      var data = jsonDecode(response.body);
+      return data['data']['id'];
     } else if (response.statusCode == 400) {
       ScaffoldMessenger.of(context).showSnackBar(
-       const SnackBar(
-          content: Text('Este proyecto se ha quedado sin cupos!', style: TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
+       SnackBar(
+          content: Text('Este proyecto se ha quedado sin cupos! ${response.body}', style: const TextStyle(color: Colors.white),textAlign: TextAlign.center, textScaler: TextScaler.linear(1.5),),
           backgroundColor: Colors.red,
         ),
       );
-      return false;
+      return 0;
     }
     else{
       ScaffoldMessenger.of(context).showSnackBar(
@@ -201,7 +202,7 @@ class Api_Request {
           backgroundColor: Colors.red,
         ),
       );
-      return false;
+      return 0;
     }
   }
   Future<List<AplicacionModel>> getAplicacionStudent(String token, int id_estudiante) async {
