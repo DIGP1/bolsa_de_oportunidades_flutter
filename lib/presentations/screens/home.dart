@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
   final User user;
-  const HomeScreen({super.key, required this.user});
+  const HomeScreen({Key? key, required this.user}) : super(key: key);
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class HomeContent extends StatefulWidget {
   final User user;
-  const HomeContent({super.key, required this.user});
+  const HomeContent({Key? key, required this.user}) : super(key: key);
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -104,13 +104,13 @@ class _HomeContentState extends State<HomeContent> {
       _isLoading = true;
     });
     try {
-      List<ProyectsModel> listProyects =
+      List<ProyectsModel> list_proyects =
           await api.getProyects(widget.user.token);
-      listProyects = listProyects.reversed.toList();
+      list_proyects = list_proyects.reversed.toList();
 
       setState(() {
-        proyects = listProyects;
-        originalProyects = listProyects;
+        proyects = list_proyects;
+        originalProyects = list_proyects;
         _isLoading = false;
       });
     } catch (e) {
