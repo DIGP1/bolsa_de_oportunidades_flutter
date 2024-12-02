@@ -413,6 +413,9 @@ class _HomeContentState extends State<HomeContent> {
                               _buildTag(proyect.tipo_proyecto),
                               const SizedBox(width: 8),
                               _buildTag(proyect.modalidad),
+                              const SizedBox(width: 8),
+                              
+                              _buildTag(proyect.estado_oferta),
                             ],
                           ),
                         ],
@@ -429,19 +432,37 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildTag(String tag) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF9C241C).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        tag,
-        style: const TextStyle(
-          color: Color(0xFF9C241C),
-          fontSize: 12,
+    if(tag == 'Activo'){
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4CAF50).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-      ),
-    );
+        child: Text(
+          tag,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 54, 172, 58),
+            fontSize: 12,
+          ),
+        ),
+      );
+    }else{
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF9C241C).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          tag,
+          style: const TextStyle(
+            color: Color(0xFF9C241C),
+            fontSize: 12,
+          ),
+        ),
+      );
+    }
+    
   }
 }
