@@ -26,8 +26,6 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   void initState() {
     super.initState();
     _checkStateProyects();
-    
-
   }
 
   @override
@@ -41,27 +39,32 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
     _checkStateProyects();
   }
 
-   Future<void> _loadProyectsAplicaciones() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _loadProyectsAplicaciones() async {
+      setState(() {
+        _isLoading = true;
+      });
+
     proyects = await api.getProyects(widget.user.token);
-    aplicaciones = await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
-    print("Aplicaciones: ${_inProyect}");
+    aplicaciones =
+        await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
+    print("Aplicaciones: $_inProyect");
     if (_inProyect) {
-      Set<int> appliedProjectIds = aplicaciones.map((a) => a.idProyecto).toSet();
-      proyects = proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
-      
+      Set<int> appliedProjectIds =
+          aplicaciones.map((a) => a.idProyecto).toSet();
+      proyects =
+          proyects.where((p) => appliedProjectIds.contains(p.id)).toList();
     } else {
       proyects = proyects.where((p) => p.id == user!.id_proyecto).toList();
     }
     _isEmpy = proyects.isEmpty;
-    setState(() {
-      _isLoading = false;
-    });
+      setState(() {
+        _isLoading = false;
+      });
   }
-  Future<void> _checkStateProyects() async{
-    user = await Api_Request().loginUserOpened(widget.user.token, widget.user.id_user);
+
+  Future<void> _checkStateProyects() async {
+    user = await Api_Request()
+        .loginUserOpened(widget.user.token, widget.user.id_user);
     _inProyect = user!.id_proyecto == 0;
     _loadProyectsAplicaciones();
   }
@@ -81,10 +84,12 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.work_off, size: 100, color: Color(0xFF9C241C)),
+                            const Icon(Icons.work_off,
+                                size: 100, color: Color(0xFF9C241C)),
                             const Text(
                               'No has aplicado a ningún proyecto',
-                              style: TextStyle(color: Color(0xFF9C241C), fontSize: 20),
+                              style: TextStyle(
+                                  color: Color(0xFF9C241C), fontSize: 20),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -94,7 +99,8 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                                 });
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(Color(0xFF9C241C)),
+                                backgroundColor: WidgetStateProperty.all(
+                                    const Color(0xFF9C241C)),
                               ),
                               child: const Text(
                                 "Actualizar Proyectos",
@@ -177,7 +183,8 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
           onTap: () async {
             var response = await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => VistaProyecto(proyectsModel: proyect, user: user!),
+                builder: (context) =>
+                    VistaProyecto(proyectsModel: proyect, user: user!),
               ),
             );
             if (response == null) {
@@ -212,7 +219,8 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: proyect.tipo_proyecto == 'Servicio Social'
-                      ? const Icon(Icons.query_builder_sharp, color: Color(0xFF9C241C))
+                      ? const Icon(Icons.query_builder_sharp,
+                          color: Color(0xFF9C241C))
                       : proyect.tipo_proyecto == 'Pasantía'
                           ? const Icon(Icons.work, color: Color(0xFF9C241C))
                           : const SizedBox(),

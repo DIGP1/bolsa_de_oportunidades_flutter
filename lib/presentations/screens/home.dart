@@ -280,7 +280,7 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Widget _buildRecentJobs() {
+    Widget _buildRecentJobs() {
     return Column(
       children: [
         const Padding(
@@ -320,8 +320,7 @@ class _HomeContentState extends State<HomeContent> {
                 }
               },
               child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -336,6 +335,7 @@ class _HomeContentState extends State<HomeContent> {
                   ],
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       width: 50,
@@ -362,6 +362,8 @@ class _HomeContentState extends State<HomeContent> {
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 8),
                           Row(
@@ -372,7 +374,7 @@ class _HomeContentState extends State<HomeContent> {
                                 color: Color(0xFF9C241C),
                               ),
                               const SizedBox(width: 4),
-                              Flexible(
+                              Expanded(
                                 child: Text(
                                   proyect.nombre_empresa,
                                   style: const TextStyle(
@@ -394,7 +396,7 @@ class _HomeContentState extends State<HomeContent> {
                                 color: Color(0xFF9C241C),
                               ),
                               const SizedBox(width: 4),
-                              Flexible(
+                              Expanded(
                                 child: Text(
                                   proyect.ubicacion,
                                   style: const TextStyle(
@@ -408,13 +410,12 @@ class _HomeContentState extends State<HomeContent> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          Row(
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
                             children: [
                               _buildTag(proyect.tipo_proyecto),
-                              const SizedBox(width: 8),
                               _buildTag(proyect.modalidad),
-                              const SizedBox(width: 8),
-                              
                               _buildTag(proyect.estado_oferta),
                             ],
                           ),
