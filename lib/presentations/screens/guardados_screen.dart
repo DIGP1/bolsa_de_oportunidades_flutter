@@ -40,15 +40,9 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
   }
 
   Future<void> _loadProyectsAplicaciones() async {
-    if (mounted) return;
-    try {
       setState(() {
         _isLoading = true;
       });
-    } catch (e) {
-      print("Error: $e");
-    }
-
     proyects = await api.getProyects(widget.user.token);
     aplicaciones =
         await api.getAplicacionStudent(widget.user.token, widget.user.id_user);
@@ -62,11 +56,9 @@ class _SavedJobsScreenState extends State<SavedJobsScreen> {
       proyects = proyects.where((p) => p.id == user!.id_proyecto).toList();
     }
     _isEmpy = proyects.isEmpty;
-    if (mounted) {
       setState(() {
         _isLoading = false;
       });
-    }
   }
 
   Future<void> _checkStateProyects() async {
