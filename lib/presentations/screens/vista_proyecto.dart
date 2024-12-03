@@ -8,8 +8,7 @@ class VistaProyecto extends StatefulWidget {
   final ProyectsModel proyectsModel;
   final User user;
   const VistaProyecto(
-      {Key? key, required this.proyectsModel, required this.user})
-      : super(key: key);
+      {super.key, required this.proyectsModel, required this.user});
 
   @override
   State<VistaProyecto> createState() => _VistaProyectoState();
@@ -32,7 +31,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
     super.initState();
     _in_Proyect = widget.user.id_proyecto != 0;
     _in_this_Proyect = widget.user.id_proyecto == widget.proyectsModel.id;
-    if(_in_Proyect){
+    if (_in_Proyect) {
       setState(() {
         _text_button = "Ya estás en un proyecto!";
         _action_button = false;
@@ -47,8 +46,12 @@ class _VistaProyectoState extends State<VistaProyecto> {
   }
 
   Future<void> verificarAplicacion() async {
+    if (!mounted)
+      return; // Verificar si el widget está montado antes de continuar
+
     list_aplicaciones_estudiante = await api_request.getAplicacionStudent(
         widget.user.token, widget.user.id_user);
+
     bool existe = list_aplicaciones_estudiante.any((element) {
       if (element.idProyecto == widget.proyectsModel.id) {
         aplicacionExistente = element;
@@ -56,28 +59,36 @@ class _VistaProyectoState extends State<VistaProyecto> {
       }
       return false;
     });
-    print("Aplicacion existente: ${aplicacionExistente!.id}");
-    if (existe && aplicacionExistente != null) {
-      if (_in_Proyect) {
-        if (_in_this_Proyect) {
-          setState(() {
-            _color_button = Colors.green;
-            _text_button = "Ya estás en este proyecto";
-            _action_button = false;
-          });
+
+    // Usar el operador ?. para acceso seguro a la propiedad id
+    if (aplicacionExistente != null) {
+      print("Aplicacion existente: ${aplicacionExistente?.id}");
+    }
+
+    if (mounted) {
+      // Verificar nuevamente antes de setState
+      if (existe && aplicacionExistente != null) {
+        if (_in_Proyect) {
+          if (_in_this_Proyect) {
+            setState(() {
+              _color_button = Colors.green;
+              _text_button = "Ya estás en este proyecto";
+              _action_button = false;
+            });
+          } else {
+            setState(() {
+              _color_button = Colors.green;
+              _text_button = "Ya estas en un proyecto!";
+              _action_button = false;
+            });
+          }
         } else {
           setState(() {
             _color_button = Colors.green;
-            _text_button = "Ya estas en un proyecto!";
+            _text_button = "Aplicación enviada";
             _action_button = false;
           });
         }
-      } else {
-        setState(() {
-          _color_button = Colors.green;
-          _text_button = "Aplicación enviada";
-          _action_button = false;
-        });
       }
     }
   }
@@ -94,12 +105,24 @@ class _VistaProyectoState extends State<VistaProyecto> {
             pinned: true,
             backgroundColor: const Color(0xFF9C241C),
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.proyectsModel.titulo, //Carga de titulo del proyecto
-                style: const TextStyle(
+              centerTitle: true,
+              titlePadding: const EdgeInsets.symmetric(
+                  horizontal: 16.0, vertical: 16.0), // Añade padding al título
+              title: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal:
+                        8.0), // Padding adicional al contenedor del texto
+                child: Text(
+                  widget.proyectsModel.titulo,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow
+                      .ellipsis, // Maneja el desbordamiento del texto
+                ),
               ),
               background: Container(
                 decoration: BoxDecoration(
@@ -183,13 +206,8 @@ class _VistaProyectoState extends State<VistaProyecto> {
                         widget.proyectsModel
                             .ubicacion, //Carga de ubicacion del proyecto
                       ),
-                      _buildInfoRow(
-                          Icons.access_time,
-                          'Duración:',
-                          widget.proyectsModel.fecha_inicio +
-                              ' hasta ' +
-                              widget.proyectsModel
-                                  .fecha_fin), //Carga de fecha de inicio y fin del proyecto
+                      _buildInfoRow(Icons.access_time, 'Duración:',
+                          '${widget.proyectsModel.fecha_inicio} hasta ${widget.proyectsModel.fecha_fin}'), //Carga de fecha de inicio y fin del proyecto
                       _buildInfoRow(
                         Icons.paste_rounded,
                         'Tipo de proyecto:',
@@ -235,6 +253,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
+// Dentro del ElevatedButton.onPressed:
                       onPressed: () async {
                         if (_in_Proyect) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -254,10 +273,11 @@ class _VistaProyectoState extends State<VistaProyecto> {
                             );
                             _id_proyecto = await api_request.applyProyect(
                                 aplicacionModel, widget.user.token, context);
-                            if ( _id_proyecto != 0) {
+                            if (_id_proyecto != 0) {
                               setState(() {
-                                _color_button = Colors.green;
-                                _text_button = "Aplicación enviada";
+                                _color_button = Colors.red; // Cambiado a rojo
+                                _text_button =
+                                    "Eliminar ahora"; // Cambiado el texto
                                 _action_button = false;
                               });
                               verificarAplicacion();
@@ -284,7 +304,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
                                 return AlertDialog(
                                   title: const Text('Eliminar Aplicación'),
                                   content: const Text(
-                                      'Ya has aplicado a este proyecto. ¿Realmente deseas eliminar tu aplicación?'),
+                                      '¿Realmente deseas eliminar tu aplicación?'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -393,6 +413,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // Añadir esta línea
         children: [
           Icon(icon, size: 20, color: const Color(0xFF9C241C)),
           const SizedBox(width: 8),
@@ -403,7 +424,13 @@ class _VistaProyectoState extends State<VistaProyecto> {
             ),
           ),
           const SizedBox(width: 8),
-          Text(value),
+          Expanded(
+            // Envolver el Text en un Expanded
+            child: Text(
+              value,
+              softWrap: true, // Permitir múltiples líneas
+            ),
+          ),
         ],
       ),
     );
@@ -475,7 +502,7 @@ class _VistaProyectoState extends State<VistaProyecto> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

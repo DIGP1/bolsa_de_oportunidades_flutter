@@ -63,7 +63,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                   title: Text(
                     notifications[index],
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   subtitle: Text(
                     'Recibido: ${DateTime.now().toLocal()}',

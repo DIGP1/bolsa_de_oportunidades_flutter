@@ -24,10 +24,10 @@ class MyApp extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     final prefs2 = await SharedPreferences.getInstance();
     final token = prefs.getString('user_token');
-    final id_estudiante = prefs2.getInt('user_id');
+    final idEstudiante = prefs2.getInt('user_id');
     
-    if (token != null && token.isNotEmpty && id_estudiante != null) {
-      User user = await Api_Request().loginUserOpened(token, id_estudiante);
+    if (token != null && token.isNotEmpty && idEstudiante != null) {
+      User user = await Api_Request().loginUserOpened(token, idEstudiante);
       print("token: ${user.token}, id: ${user.id_user}");
       return HomeScreen(user: user); // Ajusta según tu modelo
     } else {

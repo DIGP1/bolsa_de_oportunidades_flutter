@@ -1,5 +1,5 @@
 name: bolsa_de_oportunidades_flutter
-description: "A new Flutter project."
+description: A new Flutter project.
 publish_to: 'none'
 version: 0.1.0
 
@@ -11,7 +11,6 @@ dependencies:
   firebase_messaging: ^15.1.5
   flutter:
     sdk: flutter
-  flutter_launcher_icons: ^0.14.1
   http: ^1.2.2
   shared_preferences: ^2.3.3
 
@@ -19,10 +18,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: "0.13.1"
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
     - assets/logo.png
-    - assets/logo512.jpg
+
+flutter_launcher_icons:
+  android: "launcher_icon" # Especifica que solo estás generando íconos para Android
+  ios: false               # Desactiva explícitamente iOS para evitar el mensaje
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21
